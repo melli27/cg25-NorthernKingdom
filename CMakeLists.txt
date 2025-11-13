@@ -1,35 +1,90 @@
-﻿# CMakeList.txt: CMake-Projekt für "NorthernKingdom". Schließen Sie die Quelle ein, und definieren Sie
-# projektspezifische Logik hier.
-#
-cmake_minimum_required (VERSION 3.8)
+cmake_minimum_required(VERSION 3.30)
 
-# Aktivieren Sie Hot Reload für MSVC-Compiler, sofern unterstützt.
-if (POLICY CMP0141)
-  cmake_policy(SET CMP0141 NEW)
-  set(CMAKE_MSVC_DEBUG_INFORMATION_FORMAT "$<IF:$<AND:$<C_COMPILER_ID:MSVC>,$<CXX_COMPILER_ID:MSVC>>,$<$<CONFIG:Debug,RelWithDebInfo>:EditAndContinue>,$<$<CONFIG:Debug,RelWithDebInfo>:ProgramDatabase>>")
-endif()
+# The toolchain file setup should ideally be in a CMakePresets.json file,
+# but we'll keep it here for simplicity
+set(CMAKE_TOOLCHAIN_FILE "${CMAKE_CURRENT_SOURCE_DIR}/vcpkg/scripts/buildsystems/vcpkg.cmake"
+    CACHE STRING "Vcpkg toolchain file")
 
-# Fügen Sie der ausführbaren Datei dieses Projekts eine Quelle hinzu.
-add_executable (NorthernKingdom 
-"src/NorthernKingdom.cpp"
- "src/Shader.h" "src/Shader.cpp" "src/Geometry.h" "src/Geometry.cpp" "src/Material.h" "src/Material.cpp" "src/Texture.cpp" "src/Texture.h" "src/Texture.cpp" "src/Utils/stb_image.cpp" )
+project(NorthernKingdom VERSION 1.0)
 
-if (CMAKE_VERSION VERSION_GREATER 3.12)
-  set_property(TARGET NorthernKingdom PROPERTY CXX_STANDARD 20)
-endif()
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-# TODO: Fügen Sie bei Bedarf Tests hinzu, und installieren Sie Ziele.
-
-#Für vcpkg
+# Add dependencies
 find_package(glfw3 CONFIG REQUIRED)
 find_package(GLEW REQUIRED)
 find_package(glm CONFIG REQUIRED)
 find_package(gli CONFIG REQUIRED)
-find_package(OpenGL REQUIRED)
-target_link_libraries(NorthernKingdom PRIVATE glfw)
-target_link_libraries(NorthernKingdom PRIVATE GLEW::glew)
-target_link_libraries(NorthernKingdom PRIVATE glm::glm)
-target_link_libraries(NorthernKingdom PRIVATE gli)
-target_link_libraries(NorthernKingdom PRIVATE OpenGL::GL)
+#find_package(GLEW CONFIG REQUIRED)
+find_package(assimp CONFIG REQUIRED)
 
-target_include_directories(NorthernKingdom PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src/Utils)
+# No C++20 modules
+set(CMAKE_CXX_SCAN_FOR_MODULES OFF) 
+
+# Playground executable
+add_executable(NorthernKingdom)
+
+# Playground sources and headers
+file(GLOB_RECURSE NorthernKingdom_SOURCES CONFIGURE_DEPENDS 
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/*.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/*.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/*.inl"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/Shader/*.*"
+)
+
+target_sources(NorthernKingdom PRIVATE ${NorthernKingdom_SOURCES})
+
+# Playground include dirs
+target_include_directories(NorthernKingdom PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/src
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/Utils.h
+)
+
+# Preprocessor defines
+target_compile_definitions(NorthernKingdom PRIVATE
+    MY_TEST_DEFINE
+)
+
+# Automatically links to these libs
+target_link_libraries(NorthernKingdom PRIVATE
+    glfw
+    GLEW::GLEW
+    glm::glm
+    gli
+    assimp::assimp
+)
+
+# Add directories with any random loose .dlls or .libs here
+target_link_directories(NorthernKingdom PRIVATE
+  
+)
+
+# Set configuration properties for Playground
+if(MSVC)
+    target_compile_options(NorthernKingdom PRIVATE
+        /W3
+        #/MP # multithreaded build
+        #/WX # warnings as errors
+        #/ZI # program database for edit and continue
+    )
+else()
+    target_compile_options(NorthernKingdom PRIVATE 
+        -Wall 
+        -Wextra 
+        -Wpedantic
+    )
+endif()
+
+# Set Playground as the startup project
+set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT NorthernKingdom)
+
+# Filters
+source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}/src" PREFIX "Source Files" FILES ${NorthernKingdom_SOURCES})
+
+# Enable solution folders
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+
+set_target_properties(NorthernKingdom PROPERTIES
+    VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+)
