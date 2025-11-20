@@ -19,7 +19,6 @@ double camera_near = 0.1;
 double camera_far = 1000;
 
 bool polygonMode = false;
-Shader simpleShader;
 
 // settings
 int window_width = 800;
@@ -101,7 +100,7 @@ int main()
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
 	// Load shader(s)
-	simpleShader.createShader();
+	Shader simpleShader("src/Shader/vertex.shader", "src/Shader/fragment.shader");
 
 	// Create geometry
 	Geometry cube = Geometry(glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f)), Geometry::createCubeGeometry(1.5f, 1.5f, 1.5f));

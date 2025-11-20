@@ -6,22 +6,21 @@
 #include <unordered_map>
 
 class Shader {
-private:
-    GLuint shader;
-    std::unordered_map<std::string, GLint> uniformLocationMap;
-
 public:
-    Shader();
-    ~Shader();
+    unsigned int ID;
 
-    void createShader();
+    Shader(const char* vertexPath, const char* fragmentPath);
 
-    GLuint compileShader(GLuint type, const std::string& path) const;
     void activate();
 
-    void setUniform(const std::string& name, const glm::mat4& mat);
-    void setUniform(const std::string& name, const glm::vec3& vec3);
+	void setUniform(const std::string& name, int value) const;
+	void setUniform(const std::string& name, float value) const;
+	void setUniform(const std::string& name, bool value) const;
+	void setUniform(const std::string& name, const glm::vec3& vec) const;
+	void setUniform(const std::string& name, const glm::vec4& vec) const;
+    void setUniform(const std::string& name, const glm::mat3& matrix) const;
+    void setUniform(const std::string& name, const glm::mat4& matrix) const;
 
-    GLint getUniformLocation(const std::string& name);
-
+private:
+    void checkCompileErrors(unsigned int shader, std::string type);
 };
