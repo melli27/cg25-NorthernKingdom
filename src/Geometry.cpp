@@ -23,22 +23,22 @@ Geometry::Geometry(glm::mat4 modelMatrix, GeometryData data)
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
 	// create normals VBO
-	glGenBuffers(1, &_vboNormals);
-	glBindBuffer(GL_ARRAY_BUFFER, _vboNormals);
-	glBufferData(GL_ARRAY_BUFFER, data.normals.size() * sizeof(glm::vec3), data.normals.data(), GL_STATIC_DRAW);
+	//glGenBuffers(1, &_vboNormals);
+	//glBindBuffer(GL_ARRAY_BUFFER, _vboNormals);
+	//glBufferData(GL_ARRAY_BUFFER, data.normals.size() * sizeof(glm::vec3), data.normals.data(), GL_STATIC_DRAW);
 
 	// bind normals to location 1
-	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
+	//glEnableVertexAttribArray(1);
+	//glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
 	// create uvs VBO
-	glGenBuffers(1, &_vboUVs);
-	glBindBuffer(GL_ARRAY_BUFFER, _vboUVs);
-	glBufferData(GL_ARRAY_BUFFER, data.uvs.size() * sizeof(glm::vec2), data.uvs.data(), GL_STATIC_DRAW);
+	//glGenBuffers(1, &_vboUVs);
+	//glBindBuffer(GL_ARRAY_BUFFER, _vboUVs);
+	//glBufferData(GL_ARRAY_BUFFER, data.uvs.size() * sizeof(glm::vec2), data.uvs.data(), GL_STATIC_DRAW);
 
 	// bind uvs to location 2
-	glEnableVertexAttribArray(2);
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 0, 0);
+	//glEnableVertexAttribArray(2);
+	//glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 0, 0);
 
 	// create and bind indices VBO
 	glGenBuffers(1, &_vboIndices);

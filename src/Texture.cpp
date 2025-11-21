@@ -1,26 +1,22 @@
 #include "Texture.h"
 
-//std::unordered_map<std::string, std::shared_ptr<Texture>> Texture::textureMap = std::unordered_map<std::string, std::shared_ptr<Texture>>();
-
-Texture::Texture(const char* texturePath)
+Texture::Texture()
 {
-	genTexture(texturePath);
 }
 
-void Texture::bind(unsigned int unit)
+Texture::~Texture()
 {
-	glActiveTexture(GL_TEXTURE0 + unit);
-	glBindTexture(GL_TEXTURE_2D, _handle);
+	unbind();
+	glDeleteTextures(1, &handle);
 }
 
-void Texture::genTexture(const char* texturePath)
+void Texture::loadFromFile(const char* texturePath)
 {
-	glGenTextures(1, &_handle);
-	glBindTexture(GL_TEXTURE_2D, _handle); // all upcoming GL_TEXTURE_2D operations now have effect on this texture object
+	path = texturePath;
+	glGenTextures(1, &handle);
+	glBindTexture(GL_TEXTURE_2D, handle); // all upcoming GL_TEXTURE_2D operations now have effect on this texture object
 
-	int height, width, nrChannels;
-
-	unsigned char* data = stbi_load(texturePath, &width, &height, &nrChannels, 0); // TODO: use DDSimage also here
+	unsigned char* data = stbi_load(path, &width, &height, &nrChannels, 0); // TODO: use DDSimage also here
 
 	if (data)
 	{
@@ -41,6 +37,7 @@ void Texture::genTexture(const char* texturePath)
 	else
 	{
 		std::cout << "Failed to load texture" << std::endl;
+		std::cout << "Failed to load texture at path: " << path << std::endl;
 	}
 	stbi_image_free(data);
 
@@ -50,3 +47,13 @@ void Texture::genTexture(const char* texturePath)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);					// bilinear filtering
 }
 
+void Texture::bind(int location)
+{
+	glActiveTexture(GL_TEXTURE0 + location);
+	glBindTexture(GL_TEXTURE_2D, handle);
+}
+
+void Texture::unbind()
+{
+	//TODO
+}
