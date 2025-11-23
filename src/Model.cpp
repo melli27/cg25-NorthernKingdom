@@ -11,7 +11,7 @@ void Model::loadModel(string const& path)
 	scene = importer.ReadFile(
 		path, 
 		aiProcess_Triangulate |
-		aiProcess_GenNormals | //GenSmoothNormals 
+		aiProcess_GenSmoothNormals |
 		aiProcess_CalcTangentSpace | //for tangents and bitangents
 		aiProcess_JoinIdenticalVertices
 		//aiProcess_FlipUVs
@@ -199,7 +199,7 @@ vector<shared_ptr<Texture>> Model::loadMaterialTextures(aiMaterial* mat, aiTextu
 		mat->GetTexture(type, i, &str);
 
 		// Build full file path: use model directory + relative path from Assimp
-		string filePath = "src/backpack/" + string(str.C_Str());
+		string filePath = directory + "/" + string(str.C_Str());
 
 		// Check if this texture was already loaded (by path)
 		bool skip = false;
