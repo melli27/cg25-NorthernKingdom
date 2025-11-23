@@ -1,3 +1,4 @@
+#pragma once
 #include "Utils/Utils.h"
 #include <Shader.h>
 #include <Texture.h>

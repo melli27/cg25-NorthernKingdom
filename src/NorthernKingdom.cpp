@@ -9,6 +9,7 @@
 #include <Model.h>
 #include <DirectionalLight.h>
 #include <PointLight.h>
+#include <Terrain.h>
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouseCallback(GLFWwindow* window, double xpos, double ypos);
@@ -22,6 +23,7 @@ double camera_far = 1000;
 bool polygonMode = false;
 Shader lightSourceShader;
 Shader lightingShader;
+Shader terrainShader;
 
 // settings
 int window_width = 800;
@@ -119,6 +121,10 @@ int main()
 	);
 	dirLight.applyToShader(lightingShader, "dirLight");
 	pointLight.applyToShader(lightingShader, "pointLight");
+	terrainShader.createTerrainShader();
+
+	// Create Terrain
+	Terrain terrain(terrainShader, "src/terrain/diffuse.png", "src/terrain/heightMap.png");
 
 	// Create geometry
 	Model backpack("src/backpack/backpack.obj");
@@ -146,7 +152,7 @@ int main()
 		processInput(window);
 
 		// render
-		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		glm::mat4 view = camera.getViewMatrix();
@@ -164,6 +170,15 @@ int main()
 		lightSourceShader.setUniform("modelMatrix", LightCube.getModelMatrix());
 		lightSourceShader.setUniform("normalMatrix", LightCube.getNormalMatrix());
 		LightCube.draw();
+
+		//
+		// Draw Terrain with terrain shader
+		//
+		terrainShader.setUniform("model", glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -10.0f, 0.0f)), glm::vec3(0.5f)));
+		terrainShader.setUniform("view", view);
+		terrainShader.setUniform("projection", projection);
+
+		terrain.Draw(terrainShader);
 
 		// glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
 		glfwSwapBuffers(window);

@@ -17,7 +17,7 @@ public:
 	string directory;
 	bool gammaCorrection;
 
-	vector<std::shared_ptr<Texture>> loadedTextures;	// stores all the textures loaded so far, optimization to make sure textures aren't loaded more than once.
+	vector<shared_ptr<Texture>> loadedTextures;	// stores all the textures loaded so far, optimization to make sure textures aren't loaded more than once.
 	vector<string> loadedTexturePaths;
 
 	Model(string const& path, bool gamma = false);
