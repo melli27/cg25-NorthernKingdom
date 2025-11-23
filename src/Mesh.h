@@ -28,6 +28,7 @@ public:
 	//vector<glm::vec3> normals;
 	vector<unsigned int> indices;
 	vector<shared_ptr<Texture>> textures;
+	float shininess = 32.0f;
 
 	unsigned int VAO;
 

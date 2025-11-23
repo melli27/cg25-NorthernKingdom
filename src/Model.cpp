@@ -112,7 +112,21 @@ Mesh Model::processMesh(aiMesh* mesh)
 	loadMaterialTextures(mesh, meshTextures);
 
 	//create mesh object
-	return Mesh(verts, indices, meshTextures);
+	//return Mesh(verts, indices, meshTextures);
+	Mesh outMesh(verts, indices, meshTextures);
+
+	// material shininess
+	aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
+	float shininessValue = 32.0f;
+	if (material)
+	{
+		if (AI_SUCCESS == material->Get(AI_MATKEY_SHININESS, shininessValue))
+			outMesh.shininess = shininessValue;
+		else
+			outMesh.shininess = 32.0f;
+	}
+
+	return outMesh;
 }
 
 void Model::loadMaterialTextures(aiMesh* mesh, std::vector<std::shared_ptr<Texture>>& meshTextures)
@@ -123,10 +137,10 @@ void Model::loadMaterialTextures(aiMesh* mesh, std::vector<std::shared_ptr<Textu
 	aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
 	if (!material) return;
 
-	aiTextureType types[2] = { aiTextureType_DIFFUSE, aiTextureType_NORMALS }; //TODO add more?
-	string typeNames[2] = { "diffuseTexture", "normalTexture" };
+	aiTextureType types[3] = { aiTextureType_DIFFUSE, aiTextureType_SPECULAR, aiTextureType_NORMALS }; //TODO add more?
+	string typeNames[3] = { "diffuseTexture", "specularTexture", "normalTexture" };
 
-	for(int i = 0; i < 2; i++)
+	for(int i = 0; i < 3; i++)
 	{
 		aiTextureType type = types[i];
 		const string& typeName = typeNames[i];

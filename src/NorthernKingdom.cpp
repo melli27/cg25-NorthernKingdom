@@ -7,10 +7,12 @@
 #include "Geometry.h"
 #include "Camera.h"
 #include <Model.h>
+#include <DirectionalLight.h>
+#include <PointLight.h>
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
-void mouse_callback(GLFWwindow* window, double xpos, double ypos);
-void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
+void mouseCallback(GLFWwindow* window, double xpos, double ypos);
+void scrollCallback(GLFWwindow* window, double xoffset, double yoffset);
 void processInput(GLFWwindow* window);
 
 double camera_fov = 60 * 3.141592 / 180.0;
@@ -18,8 +20,8 @@ double camera_near = 0.1;
 double camera_far = 1000;
 
 bool polygonMode = false;
-Shader simpleShader;
-Shader normalShader;
+Shader lightSourceShader;
+Shader lightingShader;
 
 // settings
 int window_width = 800;
@@ -65,8 +67,8 @@ int main()
 	}
 	glfwMakeContextCurrent(window);
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-	glfwSetCursorPosCallback(window, mouse_callback);
-	glfwSetScrollCallback(window, scroll_callback);
+	glfwSetCursorPosCallback(window, mouseCallback);
+	glfwSetScrollCallback(window, scrollCallback);
 
 	//glfwSetKeyCallback(window, keyCallback);
 
@@ -98,26 +100,39 @@ int main()
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
 	// Load shader(s)
-	simpleShader.createSimpleShader();
-	normalShader.createNormalShader();
+	lightSourceShader.createLightSourceShader();
+	lightingShader.createLightingShader();
+	DirectionalLight dirLight(
+		glm::vec3(-0.4f, -0.6f, -0.2f),
+		glm::vec3(1.0f, 0.9f, 0.7f),
+		glm::vec3(0.2f, 0.2f, 0.2f),
+		glm::vec3(0.9f, 0.6f, 0.4f),
+		glm::vec3(0.9f, 0.9f, 0.8f)
+	);
+	PointLight pointLight(
+		glm::vec3(-4.0f, -1.5f, -3.0f),
+		glm::vec3(1.0f, 1.0f, 1.0f),
+		glm::vec3(0.2f, 0.2f, 0.2f),
+		glm::vec3(0.5f, 0.5f, 0.5f),
+		glm::vec3(1.0f, 1.0f, 1.0f),
+		glm::vec3(1.0f, 0.09f, 0.032f)
+	);
+	dirLight.applyToShader(lightingShader, "dirLight");
+	pointLight.applyToShader(lightingShader, "pointLight");
 
 	// Create geometry
-	//Geometry cube = Geometry(glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f)), Geometry::createCubeGeometry(1.5f, 1.5f, 1.5f));
-	//Model cube("src/cube.obj");
-	//Model backpack("src/backpack/backpack.obj");
-	Model castle("src/castle/castle.obj");
+	Model backpack("src/backpack/backpack.obj");
+	//Model castle("src/castle/castle.obj");
+	Geometry LightCube = Geometry(glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f)), Geometry::createCubeGeometry(0.2f, 0.2f, 0.2f));
 
-	// Transpose model 1
+	// Transpose model 
+	glm::mat4 lightModel = glm::translate(glm::mat4(1.0f), pointLight.position);
+	lightSourceShader.setUniformMatrix4fv("modelMatrix", 1, GL_FALSE, lightModel);
+
 	glm::mat4 model = glm::mat4(1.0f);
-	model = glm::translate(model, glm::vec3(-2.0f, -1.0f, -3.0f));
+	model = glm::translate(model, glm::vec3(-2.0f, -2.0f, -3.0f));
 	model = glm::scale(model, glm::vec3(0.3f, 0.3f, 0.3f));
-	simpleShader.setUniformMatrix4fv("modelMatrix", 1, GL_FALSE, model);
-
-	// Transpose model 2
-	glm::mat4 model2 = glm::mat4(1.0f);
-	model2 = glm::translate(model2, glm::vec3(2.0f, 1.0f, -3.0f));
-	model2 = glm::scale(model2, glm::vec3(0.3f, 0.3f, 0.3f));
-	normalShader.setUniformMatrix4fv("modelMatrix", 1, GL_FALSE, model2);
+	lightingShader.setUniformMatrix4fv("modelMatrix", 1, GL_FALSE, model);
 
 	// -----------
 	// render loop
@@ -138,26 +153,17 @@ int main()
 		camera.aspectRatio = (float)window_width / (float)window_height;
 		glm::mat4 projection = camera.getProjectionMatrix();
 
-		// Draw Backpack with simple shader
+		// Draw Castle with lighting shader
+		lightingShader.setUniform("viewProjMatrix", projection * view);
+		lightingShader.setUniform("modelMatrix", model);
+		lightingShader.setUniform("viewPos", camera.position);
+		backpack.Draw(lightingShader);
 
-		simpleShader.setUniform("viewProjMatrix", projection * view);
-		simpleShader.setUniform("modelMatrix", model);
-		simpleShader.setUniform("viewPos", camera.position);
-
-		//backpack.Draw(simpleShader);
-		castle.Draw(simpleShader);
-
-		//Draw Rotating Castle with normal shader.
-
-		glm::mat4 modelMat = glm::mat4(1.0f);
-		modelMat = glm::rotate(model2, glm::radians((float)glfwGetTime() * -10.0f), glm::normalize(glm::vec3(1.0, 0.0, 1.0))); // rotate the quad to show normal mapping from multiple directions
-
-		normalShader.setUniform("viewProjMatrix", projection * view);
-		normalShader.setUniform("modelMatrix", modelMat);
-		normalShader.setUniform("viewPos", camera.position);
-		normalShader.setUniform("lightPos", glm::vec3(2.5f, 1.0f, -1.0f));
-
-		castle.Draw(normalShader);
+		lightSourceShader.activate();
+		lightSourceShader.setUniform("viewProjMatrix", projection * view);
+		lightSourceShader.setUniform("modelMatrix", LightCube.getModelMatrix());
+		lightSourceShader.setUniform("normalMatrix", LightCube.getNormalMatrix());
+		LightCube.draw();
 
 		// glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
 		glfwSwapBuffers(window);
@@ -199,7 +205,7 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 	glViewport(0, 0, width, height);
 }
 
-void mouse_callback(GLFWwindow* window, double xposIn, double yposIn)
+void mouseCallback(GLFWwindow* window, double xposIn, double yposIn)
 {
 	float xpos = (float)xposIn;
 	float ypos = (float)yposIn;
@@ -221,7 +227,7 @@ void mouse_callback(GLFWwindow* window, double xposIn, double yposIn)
 	cam->rotate(xoffset, yoffset);
 }
 
-void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
+void scrollCallback(GLFWwindow* window, double xoffset, double yoffset)
 {
 	Camera* cam = static_cast<Camera*>(glfwGetWindowUserPointer(window));
 	cam->zoom(((float)yoffset));

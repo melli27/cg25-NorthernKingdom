@@ -18,14 +18,17 @@ public:
 
     void createSimpleShader();
     void createNormalShader();
+    void createLightingShader();
+	void createLightSourceShader();
 
     GLuint compileShader(GLuint type, const std::string& path) const;
     void activate();
 
     void setUniform(const std::string& name, const glm::mat4& mat);
     void setUniform(const std::string& name, const glm::vec3& vec3);
+    void setUniform(const std::string& name, float v);
+    void setUniform(const std::string& name, int v);
 
-    void setUniform1i(const string& name, int v);
     void setUniformMatrix4fv(const std::string& name, int size, GLboolean transposed, glm::mat4 matrix);
     void setUniformMatrix4fv(const std::string& name, int size, GLboolean transposed, GLfloat* matrix);
 

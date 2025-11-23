@@ -40,6 +40,40 @@ void Shader::createNormalShader()
 	glDeleteShader(fragmentShader);
 }
 
+void Shader::createLightingShader()
+{
+	shader = glCreateProgram();
+	GLuint vertexShader = compileShader(GL_VERTEX_SHADER, "src/Shader/lighting_vert.shader");
+	GLuint fragmentShader = compileShader(GL_FRAGMENT_SHADER, "src/Shader/lighting_frag.shader");
+
+	glAttachShader(shader, vertexShader);
+	glAttachShader(shader, fragmentShader);
+	glLinkProgram(shader);
+	glValidateProgram(shader);
+
+	ID = shader;
+
+	glDeleteShader(vertexShader);
+	glDeleteShader(fragmentShader);
+}
+
+void Shader::createLightSourceShader()
+{
+	shader = glCreateProgram();
+	GLuint vertexShader = compileShader(GL_VERTEX_SHADER, "src/Shader/light_source_vert.shader");
+	GLuint fragmentShader = compileShader(GL_FRAGMENT_SHADER, "src/Shader/light_source_frag.shader");
+
+	glAttachShader(shader, vertexShader);
+	glAttachShader(shader, fragmentShader);
+	glLinkProgram(shader);
+	glValidateProgram(shader);
+
+	ID = shader;
+
+	glDeleteShader(vertexShader);
+	glDeleteShader(fragmentShader);
+}
+
 void Shader::activate() {
 	glUseProgram(shader);
 }
@@ -99,7 +133,13 @@ void Shader::setUniform(const std::string& name, const glm::vec3& vec)
 	glUniform3f(getUniformLocation(name), vec[0], vec[1], vec[2]);
 }
 
-void Shader::setUniform1i(const string& name, int v)
+void Shader::setUniform(const std::string& name, float v)
+{
+	activate();
+	glUniform1f(getUniformLocation(name), v);
+}
+
+void Shader::setUniform(const string& name, int v)
 {
 	activate();
 	glUniform1i(getUniformLocation(name), v);

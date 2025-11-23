@@ -29,16 +29,18 @@ void Mesh::Draw(Shader &shader)
 		string uniformName;
 
 		if (name == "diffuseTexture")
-			uniformName = "diffuseTexture";
+			uniformName = "material.diffuseTexture";
 		else if (name == "specularTexture")
-			uniformName = "specularTexture";
+			uniformName = "material.specularTexture";
 		else if (name == "normalTexture")
-			uniformName = "normalTexture";
+			uniformName = "material.normalTexture";
 		else
-			uniformName = "diffuseTexture";
+			uniformName = "material.diffuseTexture";
 		
 		glUniform1i(glGetUniformLocation(shader.ID, uniformName.c_str()), i);
 	}
+
+	shader.setUniform("material.shininess", shininess);
 
 	// draw mesh
 	glBindVertexArray(VAO);
