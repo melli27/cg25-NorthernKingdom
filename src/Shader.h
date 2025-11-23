@@ -18,6 +18,7 @@ public:
 
     void createSimpleShader();
     void createNormalShader();
+    void createTerrainShader();
 
     GLuint compileShader(GLuint type, const std::string& path) const;
     void activate();

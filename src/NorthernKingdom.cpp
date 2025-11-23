@@ -7,6 +7,7 @@
 #include "Geometry.h"
 #include "Camera.h"
 #include <Model.h>
+#include <Terrain.h>
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
@@ -17,9 +18,10 @@ double camera_fov = 60 * 3.141592 / 180.0;
 double camera_near = 0.1;
 double camera_far = 1000;
 
-bool polygonMode = false;
+bool polygonMode = true;
 Shader simpleShader;
 Shader normalShader;
+Shader terrainShader;
 
 // settings
 int window_width = 800;
@@ -100,12 +102,16 @@ int main()
 	// Load shader(s)
 	simpleShader.createSimpleShader();
 	normalShader.createNormalShader();
+	terrainShader.createTerrainShader();
+
+	// Create Terrain
+	Terrain terrain(terrainShader, "src/terrain/diffuse.png", "src/terrain/heightMap.png");
 
 	// Create geometry
 	//Geometry cube = Geometry(glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f)), Geometry::createCubeGeometry(1.5f, 1.5f, 1.5f));
 	//Model cube("src/cube.obj");
-	//Model backpack("src/backpack/backpack.obj");
-	Model castle("src/castle/castle.obj");
+	Model backpack("src/backpack/backpack.obj");
+	//Model castle("src/castle/castle.obj");
 
 	// Transpose model 1
 	glm::mat4 model = glm::mat4(1.0f);
@@ -131,33 +137,43 @@ int main()
 		processInput(window);
 
 		// render
-		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		glm::mat4 view = camera.getViewMatrix();
 		camera.aspectRatio = (float)window_width / (float)window_height;
 		glm::mat4 projection = camera.getProjectionMatrix();
 
-		// Draw Backpack with simple shader
+		////
+		//// Draw Castle with simple shader
+		////
+		//simpleShader.setUniform("viewProjMatrix", projection * view);
+		//simpleShader.setUniform("modelMatrix", model);
+		//simpleShader.setUniform("viewPos", camera.position);
+		////backpack.Draw(simpleShader);
+		//castle.Draw(simpleShader);
 
-		simpleShader.setUniform("viewProjMatrix", projection * view);
-		simpleShader.setUniform("modelMatrix", model);
-		simpleShader.setUniform("viewPos", camera.position);
+		////
+		//// Draw Rotating Castle with normal shader.
+		////
+		//glm::mat4 modelMat = glm::mat4(1.0f);
+		//modelMat = glm::rotate(model2, glm::radians((float)glfwGetTime() * -10.0f), glm::normalize(glm::vec3(1.0, 0.0, 1.0))); // rotate the quad to show normal mapping from multiple directions
 
-		//backpack.Draw(simpleShader);
-		castle.Draw(simpleShader);
+		//normalShader.setUniform("viewProjMatrix", projection * view);
+		//normalShader.setUniform("modelMatrix", modelMat);
+		//normalShader.setUniform("viewPos", camera.position);
+		//normalShader.setUniform("lightPos", glm::vec3(2.5f, 1.0f, -1.0f));
 
-		//Draw Rotating Castle with normal shader.
+		//castle.Draw(normalShader);
 
-		glm::mat4 modelMat = glm::mat4(1.0f);
-		modelMat = glm::rotate(model2, glm::radians((float)glfwGetTime() * -10.0f), glm::normalize(glm::vec3(1.0, 0.0, 1.0))); // rotate the quad to show normal mapping from multiple directions
+		//
+		// Draw Terrain with terrain shader
+		//
+		terrainShader.setUniform("model", glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -10.0f, 0.0f)), glm::vec3(0.5f)));
+		terrainShader.setUniform("view", view);
+		terrainShader.setUniform("projection", projection);
 
-		normalShader.setUniform("viewProjMatrix", projection * view);
-		normalShader.setUniform("modelMatrix", modelMat);
-		normalShader.setUniform("viewPos", camera.position);
-		normalShader.setUniform("lightPos", glm::vec3(2.5f, 1.0f, -1.0f));
-
-		castle.Draw(normalShader);
+		terrain.Draw(terrainShader);
 
 		// glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
 		glfwSwapBuffers(window);

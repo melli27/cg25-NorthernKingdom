@@ -40,6 +40,29 @@ void Shader::createNormalShader()
 	glDeleteShader(fragmentShader);
 }
 
+void Shader::createTerrainShader()
+{
+	shader = glCreateProgram();
+	GLuint vertexShader = compileShader(GL_VERTEX_SHADER, "src/Shader/terrain_vert.shader");
+	GLuint fragmentShader = compileShader(GL_FRAGMENT_SHADER, "src/Shader/terrain_frag.shader");
+	unsigned int tessControlShader = compileShader(GL_TESS_CONTROL_SHADER, "src/Shader/terrain_tcs.shader");
+	unsigned int tessEvalShader = compileShader(GL_TESS_EVALUATION_SHADER, "src/Shader/terrain_tes.shader");
+
+	glAttachShader(shader, vertexShader);
+	glAttachShader(shader, fragmentShader);
+	glAttachShader(shader, tessControlShader);
+	glAttachShader(shader, tessEvalShader);
+	glLinkProgram(shader);
+	glValidateProgram(shader);
+
+	ID = shader;
+
+	glDeleteShader(vertexShader);
+	glDeleteShader(fragmentShader);
+	glDeleteShader(tessControlShader);
+	glDeleteShader(tessEvalShader);
+}
+
 void Shader::activate() {
 	glUseProgram(shader);
 }

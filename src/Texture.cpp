@@ -4,12 +4,6 @@ Texture::Texture()
 {
 }
 
-Texture::~Texture()
-{
-	unbind();
-	glDeleteTextures(1, &handle);
-}
-
 void Texture::loadFromFile(const char* texturePath)
 {
 	path = texturePath;
@@ -36,7 +30,6 @@ void Texture::loadFromFile(const char* texturePath)
 	}
 	else
 	{
-		std::cout << "Failed to load texture" << std::endl;
 		std::cout << "Failed to load texture at path: " << path << std::endl;
 	}
 	stbi_image_free(data);
@@ -51,9 +44,4 @@ void Texture::bind(int location)
 {
 	glActiveTexture(GL_TEXTURE0 + location);
 	glBindTexture(GL_TEXTURE_2D, handle);
-}
-
-void Texture::unbind()
-{
-	//TODO
 }

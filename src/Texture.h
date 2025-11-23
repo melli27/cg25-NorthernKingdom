@@ -4,20 +4,19 @@
 class Texture {
 private:
 
+public:
+
+	unsigned int handle; //TODO maybe GLuint
+	const char* path;
+	string type;
+
 	int width;
 	int height;
 	int nrChannels;
 
-public:
-
-	GLuint handle;
-	const char* path;
-	string type;
-
 	Texture();
-	~Texture();
 	void loadFromFile(const char* texturePath);
 	void bind(int location);
-	void unbind();
+	//void unbind();
 
 };
