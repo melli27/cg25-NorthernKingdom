@@ -6,7 +6,7 @@ Terrain::Terrain(Shader& shader, const char* texturePath, const char* heightMapP
 
 	heightMapTexture.loadFromFile(heightMapPath);
 	//heightMapTexture.bind(0);
-	shader.setUniform1i("heightMap", 0);
+	//shader.setUniform1i("heightMap", 0);
 	//surfaceTexture.loadFromFile(texturePath);
 
 	height = heightMapTexture.height;
