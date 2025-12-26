@@ -2,19 +2,18 @@
 
 in float Height;
 in vec4 textPos;
-in vec2 TexCoord; // new
+in vec2 TexCoord;
 
-//uniform sampler2D surfaceTexture;
+uniform sampler2D surfaceTexture;
 
 out vec4 FragColor;
 
 void main()
 {
-    //vec4 texColor = texture(surfaceTexture, TexCoord);
-    //FragColor = texColor;
+    vec4 texColor = texture(surfaceTexture, TexCoord);
 
     // use height for shading effect
-    float h = (Height + 16)/64.0f;
-    FragColor = vec4(h, h, h, 1.0);
-    // FragColor = texColor * vec4(h, h, h, 1.0);
+    float h = (Height + 150)/200.0f;
+    
+    FragColor = texColor * vec4(h, h, h, 1.0);
 }

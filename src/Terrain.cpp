@@ -5,12 +5,15 @@ Terrain::Terrain(Shader& shader, const char* texturePath, const char* heightMapP
 	shader.activate();
 
 	heightMapTexture.loadFromFile(heightMapPath);
-	//heightMapTexture.bind(0);
-	//shader.setUniform1i("heightMap", 0);
-	//surfaceTexture.loadFromFile(texturePath);
+	heightMapTexture.bind(0);
+	shader.setUniform("heightMap", 0);
 
-	height = heightMapTexture.height;
-	width = heightMapTexture.width;
+	surfaceTexture.loadFromFile(texturePath);
+	surfaceTexture.bind(0);
+	shader.setUniform("surfaceTexture", 1);
+
+	height = heightMapTexture.height * terrainScale;
+	width = heightMapTexture.width * terrainScale;
 
 	// Set up vertex data
 
@@ -81,7 +84,7 @@ void Terrain::Draw(Shader& shader)
 	// 
 	heightMapTexture.bind(0);
 
-	//surfaceTexture.bind(1);
+	surfaceTexture.bind(1);
 	//shader.setUniform1i("surfaceTexture", 1);
 
 	glBindVertexArray(VAO);

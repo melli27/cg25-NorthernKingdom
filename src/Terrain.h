@@ -22,7 +22,8 @@ private:
 	vector<float> vertices;
 	unsigned int VAO, VBO;
 	unsigned int NUM_PATCH_PTS = 4;
-	unsigned rez = 20;
+	unsigned rez = 64;
+	float terrainScale = 0.5f;
 	int width, height; // TODO , nrChannels;
 
 };

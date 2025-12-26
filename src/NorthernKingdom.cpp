@@ -81,7 +81,8 @@ int main()
 
 	glClearColor(1, 1, 1, 1);
 	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_CULL_FACE);
+	//glEnable(GL_CULL_FACE);
+	glDisable(GL_CULL_FACE);   // in your init, or around terrain drawing
 
 	if (polygonMode) {
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -124,7 +125,7 @@ int main()
 	terrainShader.createTerrainShader();
 
 	// Create Terrain
-	Terrain terrain(terrainShader, "src/terrain/diffuse.png", "src/terrain/heightMap.png");
+	Terrain terrain(terrainShader, "src/terrain/diffuse.png", "src/terrain/heighto.png");
 
 	// Create geometry
 	Model backpack("src/backpack/backpack.obj");
@@ -174,11 +175,15 @@ int main()
 		//
 		// Draw Terrain with terrain shader
 		//
-		terrainShader.setUniform("model", glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -10.0f, 0.0f)), glm::vec3(0.5f)));
+		terrainShader.setUniform("model", glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 40.0f, 0.0f)), glm::vec3(0.5f)));
 		terrainShader.setUniform("view", view);
 		terrainShader.setUniform("projection", projection);
 
+		glDisable(GL_CULL_FACE);   // in your init, or around terrain drawing
+		
 		terrain.Draw(terrainShader);
+
+		if (!polygonMode) glEnable(GL_CULL_FACE);
 
 		// glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
 		glfwSwapBuffers(window);

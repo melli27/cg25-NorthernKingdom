@@ -22,20 +22,7 @@ void main()
     vec2 uv0 = mix(HeightMapCoordinates[0], HeightMapCoordinates[1], u);
     vec2 uv1 = mix(HeightMapCoordinates[2], HeightMapCoordinates[3], u);
     vec2 uv = mix(uv0, uv1, v);
-    Height = texture(heightMap, uv).r * 64.0 - 16.0;
-
-
-    //vec2 t00 = HeightMapCoordinates[0];
-    //vec2 t01 = HeightMapCoordinates[1];
-    //vec2 t10 = HeightMapCoordinates[2];
-    //vec2 t11 = HeightMapCoordinates[3];
-    //
-    //vec2 t0 = (t01 - t00) * u + t00;
-    //vec2 t1 = (t11 - t10) * u + t10;
-    //vec2 texCoord = (t1 - t0) * v + t0;
-
-    //Height = texture(heightMap, texCoord).x * 254.0f;   // größer 200 => man kommt sich klein vor, kleiner => man schwebt in der Luft
-    //Height = texture(heightMap, texCoord).y * 64.0 - 16; // * scale - offset
+    Height = texture(heightMap, uv).r * 200.0 - 100.0; // * scale - offset  64.0-16.0  Displacementscale
 
     vec4 p00 = gl_in[0].gl_Position;
     vec4 p01 = gl_in[1].gl_Position;
