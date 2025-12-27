@@ -125,7 +125,7 @@ int main()
 	terrainShader.createTerrainShader();
 
 	// Create Terrain
-	Terrain terrain(terrainShader, "src/terrain/diffuse.png", "src/terrain/heighto.png");
+	Terrain terrain(terrainShader, "src/textures/rock/rock_diffuse.png", "src/terrain/height.png");
 
 	// Create geometry
 	Model backpack("src/backpack/backpack.obj");
@@ -175,7 +175,7 @@ int main()
 		//
 		// Draw Terrain with terrain shader
 		//
-		terrainShader.setUniform("model", glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 40.0f, 0.0f)), glm::vec3(0.5f)));
+		terrainShader.setUniform("model", glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 36.0f, 0.0f)), glm::vec3(0.5f)));
 		terrainShader.setUniform("view", view);
 		terrainShader.setUniform("projection", projection);
 

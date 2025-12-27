@@ -19,6 +19,15 @@ private:
 	Texture heightMapTexture;
 	Texture surfaceTexture;
 
+	Texture rockDiffuse;
+	Texture rockNormal;
+
+	Texture grassDiffuse;
+	Texture grassNormal;
+
+	Texture snowDiffuse;
+	Texture snowNormal;
+
 	vector<float> vertices;
 	unsigned int VAO, VBO;
 	unsigned int NUM_PATCH_PTS = 4;

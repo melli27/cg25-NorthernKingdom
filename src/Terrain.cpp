@@ -8,9 +8,29 @@ Terrain::Terrain(Shader& shader, const char* texturePath, const char* heightMapP
 	heightMapTexture.bind(0);
 	shader.setUniform("heightMap", 0);
 
-	surfaceTexture.loadFromFile(texturePath);
-	surfaceTexture.bind(0);
-	shader.setUniform("surfaceTexture", 1);
+	//Rock
+	rockDiffuse.loadFromFile("src/textures/rock/rock_diffuse.png"); //TODO increase loading speed (lower pic quality or no normal or rgb only)
+	shader.setUniform("rockDiffuse", 1);
+
+	//rockNormal.loadFromFile("src/textures/rock/rock_normal.png");
+	shader.setUniform("rockNormal", 2);
+
+	//Grass
+	grassDiffuse.loadFromFile("src/textures/grass/grass_diffuse.png");
+	shader.setUniform("grassDiffuse", 3);
+
+	//grassNormal.loadFromFile("src/textures/grass/grass_normal.png");
+	shader.setUniform("grassNormal", 4);
+
+	//Snow
+	snowDiffuse.loadFromFile("src/textures/snow/snow_diffuse.png");
+	shader.setUniform("snowDiffuse", 5);
+
+	//snowNormal.loadFromFile("src/textures/snow/snow_normal.png");
+	shader.setUniform("snowNormal", 6);
+
+	shader.setUniform("lightDir", glm::vec3(1.0f, 1.0f, 1.0f));
+	shader.setUniform("viewPos", glm::normalize(glm::vec3(1.0f, 1.0f, 1.0f)));
 
 	height = heightMapTexture.height * terrainScale;
 	width = heightMapTexture.width * terrainScale;
@@ -70,22 +90,33 @@ Terrain::Terrain(Shader& shader, const char* texturePath, const char* heightMapP
 
 	glPatchParameteri(GL_PATCH_VERTICES, NUM_PATCH_PTS);
 
-	//surfaceTexture.bind(1);
-	//surfaceTexture.loadFromFile(texturePath);
-	//shader.setUniform1i("surfaceTexture", 1);
-
 } 
 
 void Terrain::Draw(Shader& shader)
 {
 	shader.activate();
 
-	//glActiveTexture(GL_TEXTURE0);
-	// 
+	glActiveTexture(GL_TEXTURE0);
 	heightMapTexture.bind(0);
 
-	surfaceTexture.bind(1);
-	//shader.setUniform1i("surfaceTexture", 1);
+	glActiveTexture(GL_TEXTURE1);
+	rockDiffuse.bind(1);
+
+	glActiveTexture(GL_TEXTURE2);
+	rockNormal.bind(2);
+	
+	glActiveTexture(GL_TEXTURE3);
+	grassDiffuse.bind(3);
+
+	glActiveTexture(GL_TEXTURE4);
+	grassNormal.bind(4);
+
+	glActiveTexture(GL_TEXTURE5);
+	snowDiffuse.bind(5);
+
+	glActiveTexture(GL_TEXTURE6);
+	snowNormal.bind(6);
+	
 
 	glBindVertexArray(VAO);
 	glDrawArrays(GL_PATCHES, 0, NUM_PATCH_PTS * rez * rez);
