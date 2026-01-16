@@ -3,7 +3,8 @@
 struct Material
 {
     sampler2D diffuseTexture;
-    sampler2D specularTexture;    
+    sampler2D specularTexture;
+    sampler2D normalTexture;
     float shininess;
 };
 
@@ -29,10 +30,12 @@ struct PointLight
 in vec3 FragPos;  
 in vec3 Normal;  
 in vec2 TexCoords;
+in mat3 TBN;
 
 out vec4 FragColor;
 
 uniform vec3 viewPos;
+uniform bool normalMapping = true;
 uniform Material material;
 uniform DirectionalLight dirLight;
 uniform PointLight pointLight;
@@ -82,7 +85,20 @@ vec3 calculatePointLight(vec3 normal, vec3 viewDir)
 
 void main()
 {
-    vec3 normal = normalize(Normal);
+    vec3 normal;
+    if(normalMapping)
+    {
+        normal = texture(material.normalTexture, TexCoords).rgb;
+        //Normal = normalize(2.0f * normal - 1.0d);
+        normal = normalize(TBN * normal);
+    }
+    else
+    {
+        normal = normalize(Normal);
+    }
+
+    //vec3 normal = normalize(Normal);
+
     vec3 viewDir = normalize(viewPos - FragPos);
     vec3 color = calculateDirLight(normal, viewDir); // Blinn-Phong for directional light 
     color += calculatePointLight(normal, viewDir); // Blinn-Phong for point light

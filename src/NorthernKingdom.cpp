@@ -4,28 +4,17 @@
 #include <iostream>
 #include <vector>
 #include "Shader.h"
-#include "Geometry.h"
 #include "Camera.h"
-#include <Model.h>
-#include <DirectionalLight.h>
-#include <PointLight.h>
-#include <Terrain.h>
+#include <Model/Model.h>
+#include <InputManager.h>
+#include <Scene.h>
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
-void mouseCallback(GLFWwindow* window, double xpos, double ypos);
-void scrollCallback(GLFWwindow* window, double xoffset, double yoffset);
-void processInput(GLFWwindow* window);
 
 double camera_fov = 60 * 3.141592 / 180.0;
 double camera_near = 0.1;
 double camera_far = 1000;
 
-bool polygonMode = false;
-Shader lightSourceShader;
-Shader lightingShader;
-Shader terrainShader;
-
-// settings
 int window_width = 800;
 int window_height = 800;
 
@@ -50,8 +39,6 @@ int main()
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
-	// set refresh rate:
 	glfwWindowHint(GLFW_REFRESH_RATE, refresh_rate);
 
 #if _DEBUG
@@ -69,77 +56,28 @@ int main()
 	}
 	glfwMakeContextCurrent(window);
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-	glfwSetCursorPosCallback(window, mouseCallback);
-	glfwSetScrollCallback(window, scrollCallback);
-
-	//glfwSetKeyCallback(window, keyCallback);
 
 	//glewExperimental = true;
 	if (GLEW_OK != glewInit()) {
 		EXIT_WITH_ERROR("Failed to init GLEW");
 	}
 
-	glClearColor(1, 1, 1, 1);
-	glEnable(GL_DEPTH_TEST);
-	//glEnable(GL_CULL_FACE);
-	glDisable(GL_CULL_FACE);   // in your init, or around terrain drawing
-
-	if (polygonMode) {
-		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-		glDisable(GL_CULL_FACE);
-	}
-
-	//Camera camera(window, camera_fov, (double)800 / (double)800, camera_near, camera_far, false);
 	Camera camera(camera_fov, (float)window_width / (float)window_height, camera_near, camera_far);
 	camera.lastX = window_width / 2.0f;
 	camera.lastY = window_height / 2.0f;
 
-
-	// build and compile our shader program
-	// ------------------------------------
-
-	glfwSetWindowUserPointer(window, &camera);
-	//glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
+	InputManager inputManager(&camera);
+	glfwSetWindowUserPointer(window, &inputManager);
+	glfwSetCursorPosCallback(window, InputManager::mouseCallback);
+	glfwSetScrollCallback(window, InputManager::scrollCallback);
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+	//glfwSetKeyCallback(window, keyCallback);
 
-	// Load shader(s)
-	lightSourceShader.createLightSourceShader();
-	lightingShader.createLightingShader();
-	DirectionalLight dirLight(
-		glm::vec3(-0.4f, -0.6f, -0.2f),
-		glm::vec3(1.0f, 0.9f, 0.7f),
-		glm::vec3(0.2f, 0.2f, 0.2f),
-		glm::vec3(0.9f, 0.6f, 0.4f),
-		glm::vec3(0.9f, 0.9f, 0.8f)
-	);
-	PointLight pointLight(
-		glm::vec3(-4.0f, -1.5f, -3.0f),
-		glm::vec3(1.0f, 1.0f, 1.0f),
-		glm::vec3(0.2f, 0.2f, 0.2f),
-		glm::vec3(0.5f, 0.5f, 0.5f),
-		glm::vec3(1.0f, 1.0f, 1.0f),
-		glm::vec3(1.0f, 0.09f, 0.032f)
-	);
-	dirLight.applyToShader(lightingShader, "dirLight");
-	pointLight.applyToShader(lightingShader, "pointLight");
-	terrainShader.createTerrainShader();
 
-	// Create Terrain
-	Terrain terrain(terrainShader, "src/textures/rock/rock_diffuse.png", "src/terrain/height.png");
-
-	// Create geometry
-	Model backpack("src/backpack/backpack.obj");
-	//Model castle("src/castle/castle.obj");
-	Geometry LightCube = Geometry(glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f)), Geometry::createCubeGeometry(0.2f, 0.2f, 0.2f));
-
-	// Transpose model 
-	glm::mat4 lightModel = glm::translate(glm::mat4(1.0f), pointLight.position);
-	lightSourceShader.setUniformMatrix4fv("modelMatrix", 1, GL_FALSE, lightModel);
-
-	glm::mat4 model = glm::mat4(1.0f);
-	model = glm::translate(model, glm::vec3(-2.0f, -2.0f, -3.0f));
-	model = glm::scale(model, glm::vec3(0.3f, 0.3f, 0.3f));
-	lightingShader.setUniformMatrix4fv("modelMatrix", 1, GL_FALSE, model);
+	// Create scene objects (Models & Terrain)
+	// ------------------------------------
+	Scene scene(&camera);
+	scene.init();
 
 	// -----------
 	// render loop
@@ -150,40 +88,18 @@ int main()
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
 
-		processInput(window);
+		inputManager.processInput(window, deltaTime);
 
 		// render
 		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		glm::mat4 view = camera.getViewMatrix();
-		camera.aspectRatio = (float)window_width / (float)window_height;
 		glm::mat4 projection = camera.getProjectionMatrix();
 
-		// Draw Castle with lighting shader
-		lightingShader.setUniform("viewProjMatrix", projection * view);
-		lightingShader.setUniform("modelMatrix", model);
-		lightingShader.setUniform("viewPos", camera.position);
-		backpack.Draw(lightingShader);
+		scene.render(deltaTime);
 
-		lightSourceShader.activate();
-		lightSourceShader.setUniform("viewProjMatrix", projection * view);
-		lightSourceShader.setUniform("modelMatrix", LightCube.getModelMatrix());
-		lightSourceShader.setUniform("normalMatrix", LightCube.getNormalMatrix());
-		LightCube.draw();
-
-		//
-		// Draw Terrain with terrain shader
-		//
-		terrainShader.setUniform("model", glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 36.0f, 0.0f)), glm::vec3(0.5f)));
-		terrainShader.setUniform("view", view);
-		terrainShader.setUniform("projection", projection);
-
-		glDisable(GL_CULL_FACE);   // in your init, or around terrain drawing
-		
-		terrain.Draw(terrainShader);
-
-		if (!polygonMode) glEnable(GL_CULL_FACE);
+		//if (!polygonMode) glEnable(GL_CULL_FACE);
 
 		// glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
 		glfwSwapBuffers(window);
@@ -195,60 +111,12 @@ int main()
 	return 0;
 }
 
-// process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
-// ---------------------------------------------------------------------------------------------------------
-void processInput(GLFWwindow* window)
-{
-	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-		glfwSetWindowShouldClose(window, true);
-
-	Camera* cam = static_cast<Camera*>(glfwGetWindowUserPointer(window));
-
-	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-		cam->move(FORWARD, deltaTime);
-	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-		cam->move(BACKWARD, deltaTime);
-	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-		cam->move(LEFT, deltaTime);
-	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-		cam->move(RIGHT, deltaTime);
-}
-
-// glfw: whenever the window size changed (by OS or user resize) this callback function executes
-// ---------------------------------------------------------------------------------------------
+// TODO: move to InputManager.cpp
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
-	// make sure the viewport matches the new window dimensions; note that width and 
-	// height will be significantly larger than specified on retina displays.
+
 	window_width = width;
 	window_height = height;
+
 	glViewport(0, 0, width, height);
-}
-
-void mouseCallback(GLFWwindow* window, double xposIn, double yposIn)
-{
-	float xpos = (float)xposIn;
-	float ypos = (float)yposIn;
-	Camera* cam = static_cast<Camera*>(glfwGetWindowUserPointer(window));
-
-	if (cam->firstMouse)
-	{
-		cam->lastX = xpos;
-		cam->lastY = ypos;
-		cam->firstMouse = false;
-	}
-
-	float xoffset = xpos - cam->lastX;
-	float yoffset = cam->lastY - ypos;
-
-	cam->lastX = xpos;
-	cam->lastY = ypos;
-
-	cam->rotate(xoffset, yoffset);
-}
-
-void scrollCallback(GLFWwindow* window, double xoffset, double yoffset)
-{
-	Camera* cam = static_cast<Camera*>(glfwGetWindowUserPointer(window));
-	cam->zoom(((float)yoffset));
 }

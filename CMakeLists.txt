@@ -31,6 +31,7 @@ file(GLOB_RECURSE NorthernKingdom_SOURCES CONFIGURE_DEPENDS
     "${CMAKE_CURRENT_SOURCE_DIR}/src/*.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/src/*.inl"
     "${CMAKE_CURRENT_SOURCE_DIR}/src/Shader/*.*"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/assets/*.*"
 )
 
 target_sources(NorthernKingdom PRIVATE ${NorthernKingdom_SOURCES})
@@ -38,6 +39,7 @@ target_sources(NorthernKingdom PRIVATE ${NorthernKingdom_SOURCES})
 # Playground include dirs
 target_include_directories(NorthernKingdom PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/src
+    ${CMAKE_CURRENT_SOURCE_DIR}/assets
     ${CMAKE_CURRENT_SOURCE_DIR}/src/Utils.h
 )
 

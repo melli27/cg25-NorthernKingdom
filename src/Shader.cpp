@@ -101,12 +101,11 @@ void Shader::activate() {
 	glUseProgram(shader);
 }
 
-Shader::Shader(){}
+Shader::Shader() {}
 
 Shader::~Shader() {
 	glDeleteProgram(shader);
 }
-
 
 GLuint Shader::compileShader(GLuint type, const std::string& path) const {
 	std::ifstream stream(path);
@@ -146,34 +145,28 @@ GLint Shader::getUniformLocation(const std::string& name) {
 
 void Shader::setUniform(const std::string& name, const glm::mat4& matrix)
 {
-	activate();
 	glUniformMatrix4fv(getUniformLocation(name), 1, GL_FALSE, &matrix[0][0]);
 }
 
 void Shader::setUniform(const std::string& name, const glm::vec3& vec)
 {
-	activate();
 	glUniform3f(getUniformLocation(name), vec[0], vec[1], vec[2]);
 }
 
 void Shader::setUniform(const std::string& name, float v)
 {
-	activate();
 	glUniform1f(getUniformLocation(name), v);
 }
 
 void Shader::setUniform(const string& name, int v)
 {
-	activate();
 	glUniform1i(getUniformLocation(name), v);
 }
 
 void Shader::setUniformMatrix4fv(const std::string& name, int size, GLboolean transposed, glm::mat4 matrix) {
-	activate();
 	setUniformMatrix4fv(name, size, transposed, &matrix[0][0]);
 }
 
 void Shader::setUniformMatrix4fv(const std::string& name, int size, GLboolean transposed, GLfloat* matrix) {
-	activate();
 	glUniformMatrix4fv(getUniformLocation(name), size, transposed, matrix);
 }

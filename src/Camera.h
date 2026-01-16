@@ -25,7 +25,7 @@ public:
 	float nearPlane;
 	float farPlane;
 
-	float movementSpeed = 2.5f;
+	float movementSpeed = 8.5f;
 	float mouseSensitivity = 0.1f;
 
 	float lastX = 0.0f;
