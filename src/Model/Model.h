@@ -22,7 +22,7 @@ class Model
 {
 public:
 
-	Model(string const& path);
+	Model(string const& path, bool flipUVs);
 	void draw(Shader& shader);
 	void animate(Shader& shader, mat4 modelMatrix, float currentTime, vec3 dir, float speed, float dt);
 
@@ -54,7 +54,7 @@ private:
 	vector<mat4> finalBoneMatrices;
 
 	// model loading
-	void loadModel(string const& path);
+	void loadModel(string const& path, bool flipUVs);
 	void processNode(aiNode* node);
 	Mesh processMesh(aiMesh* mesh);
 	void loadMaterialTextures(aiMesh* mesh, vector<shared_ptr<Texture>>& meshTextures);

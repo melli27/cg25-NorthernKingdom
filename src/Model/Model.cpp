@@ -1,8 +1,8 @@
 #include "Model.h"
 
-Model::Model(string const& path)
+Model::Model(string const& path, bool flipUVs)
 {
-	loadModel(path);
+	loadModel(path, flipUVs);
 }
 
 void Model::draw(Shader& shader)
@@ -22,16 +22,27 @@ void Model::animate(Shader& shader, mat4 modelMatrix, float currentTime, vec3 di
 }
 
 
-void Model::loadModel(string const& path)
+void Model::loadModel(string const& path, bool flipUVs)
 {
-	scene = importer.ReadFile(
-		path,
-		aiProcess_Triangulate |
-		aiProcess_GenSmoothNormals |
-		aiProcess_CalcTangentSpace | //for tangents and bitangents
-		aiProcess_JoinIdenticalVertices
-		//aiProcess_FlipUVs
-	);
+	if (flipUVs) {
+		scene = importer.ReadFile(
+			path,
+			aiProcess_Triangulate |
+			aiProcess_GenSmoothNormals |
+			aiProcess_CalcTangentSpace | //for tangents and bitangents
+			aiProcess_JoinIdenticalVertices |
+			aiProcess_FlipUVs
+		);
+	}
+	else {
+		scene = importer.ReadFile(
+			path,
+			aiProcess_Triangulate |
+			aiProcess_GenSmoothNormals |
+			aiProcess_CalcTangentSpace | //for tangents and bitangents
+			aiProcess_JoinIdenticalVertices
+		);
+	}
 
 	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) // if is Not Zero
 	{

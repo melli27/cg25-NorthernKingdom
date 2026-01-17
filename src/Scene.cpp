@@ -48,8 +48,8 @@ void Scene::init() {
 	testCube->transform(glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -2.45f, 0.0f)));
 	//lightCube = new Geometry(glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f)), Geometry::createCubeGeometry(0.2f, 0.2f, 0.2f));
 	terrain = new Terrain(terrainShader, "assets/heightmap.png");
-	backpack = new Model("assets/models/backpack/backpack.obj");
-	castleGuard = new Model("assets/models/castle_guard/castle_guard.dae");
+	backpack = new Model("assets/models/backpack/backpack.obj", false);
+	castleGuard = new Model("assets/models/castle_guard/castle_guard.dae", true);
 
 	// Load Animations
 
