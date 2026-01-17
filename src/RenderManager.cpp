@@ -7,8 +7,8 @@ RenderManager::RenderManager() {
 RenderManager::~RenderManager() {
 }
 
-void RenderManager::renderModel(Model* model, Shader& shader, const glm::mat4& modelMatrix,
-	Camera* camera, const glm::mat4& viewProj) {
+void RenderManager::renderModel(Model* model, Shader& shader, const glm::mat4& modelMatrix, vec3 cameraPosition, const mat4& viewProj) 
+{
 	if (!model) {
 		return;
 	}
@@ -16,28 +16,49 @@ void RenderManager::renderModel(Model* model, Shader& shader, const glm::mat4& m
 	shader.activate();
 	shader.setUniform("viewProjMatrix", viewProj);
 	shader.setUniform("modelMatrix", modelMatrix);
-	shader.setUniform("viewPos", camera->position);
+	shader.setUniform("viewPos", cameraPosition);
 	shader.setUniform("isAnimated", false);
 
 	model->draw(shader);
 }
 
-void RenderManager::renderAnimatedModel(Model* model, Shader& shader, const glm::mat4& modelMatrix, Camera* camera, const glm::mat4& viewProj) {
+void RenderManager::renderShadedModel(Model* model, Shader& shader, const glm::mat4& modelMatrix, vec3 cameraPosition, const glm::mat4& viewProj, const mat4& lightspaceMatrix)
+{
+	if (!model) {
+		return;
+	}
+
+	shader.activate();
+	shader.setUniform("viewProjMatrix", viewProj);
+	shader.setUniform("modelMatrix", modelMatrix);
+	shader.setUniform("viewPos", cameraPosition);
+	//shader.setUniform("isAnimated", false);
+
+	shader.setUniformMatrix4fv("lightSpaceMatrix", 1, GL_FALSE, lightspaceMatrix);
+	shader.setUniform("shadowMap", 3);
+	shader.setUniform("pointShadowMap", 4);
+	shader.setUniform("farPlane", 25.0f);//TODO get from lightmanager pointfarplane
+
+	model->draw(shader);
+	
+}
+
+void RenderManager::renderAnimatedModel(Model* model, Shader& shader, const glm::mat4& modelMatrix, vec3 cameraPosition, const glm::mat4& viewProj) {
 	shader.activate();
 
 	// Set standard uniforms
 	shader.setUniform("viewProjMatrix", viewProj);
 	shader.setUniform("modelMatrix", modelMatrix);
-	shader.setUniform("viewPos", camera->position);
-	shader.setUniform("isAnimated", true);
+	shader.setUniform("viewPos", cameraPosition);
+	shader.setUniform("isAnimated", false);
 
 	// Get and send bone matrices
 	vector<glm::mat4> transformationMatrices = model->getBoneTransforms(glfwGetTime(), mat4(1.0f));
 	for (unsigned int i = 0; i < transformationMatrices.size(); i++) {
 		glm::mat4 mat = transformationMatrices[i];
 		shader.setUniformMatrix4fv("boneMatrices[" + std::to_string(i) + "]", 1, GL_FALSE, mat);
+		//std::cout << "boneMatrices[" + std::to_string(i) + "]" << glm::to_string(mat) << std::endl;
 	}
-
 	//model->animate(shader, modelMatrix, glfwGetTime(), glm::vec3(0.0f), 0.0f, 0.0f);
 
 	// Draw the model

@@ -9,7 +9,7 @@ layout(location = 5) in ivec4 boneIDs;
 layout(location = 6) in vec4 weigths;
 
 const int MAX_BONES = 100;
-uniform mat4 boneMatrices[MAX_BONES];
+uniform mat4 boneMatrices[100];
 uniform bool isAnimated;
 
 uniform mat4 modelMatrix;
@@ -18,32 +18,23 @@ uniform mat4 viewProjMatrix;
 out vec3 FragPos;
 out vec3 Normal;
 out vec2 TexCoords;
-out mat3 TBN;
+//out mat3 TBN;
 
-void main() 
+void main()
 {
     vec4 vertexPos;
 
     if(isAnimated)
     {
-        // Calculate Bone Transform for skinning
-        mat4 boneTransform = mat4(0.0);
-        for(int i = 0; i < 4; i++)
-        {
-            if(boneIDs[i] >= 0)  // Prüfe auf gültige IDs!
-            {
-                boneTransform += boneMatrices[boneIDs[i]] * weigths[i];
-            }
-        }
-    
-        // Wenn keine Bones zugeordnet sind, verwende Identity Matrix
-        if(boneTransform == mat4(0.0))
-        {
-            boneTransform = mat4(1.0);
-        }
+        mat4 boneTransform = boneMatrices[boneIDs[0]] * weigths[0];
+        boneTransform += boneMatrices[boneIDs[1]] * weigths[1];
+        boneTransform += boneMatrices[boneIDs[2]] * weigths[2];
+        boneTransform += boneMatrices[boneIDs[3]] * weigths[3];
 
         // Apply bone transformation to vertex position and normal
-        vec4 vertexPos = (modelMatrix * boneTransform) * vec4(position, 1.0);
+        //vertexPos = (modelMatrix * boneTransform) * vec4(position, 1.0);
+        //vertexPos = vec4(transpose(inverse(modelMatrix * boneTransform))) * vec4(position, 1.0);
+        vertexPos = boneTransform * vec4(position, 1.0);
         Normal = mat3(transpose(inverse(modelMatrix * boneTransform))) * normal;
     }
     else
@@ -54,10 +45,10 @@ void main()
 
     FragPos = vec3(vertexPos);
 
-    vec3 T = normalize(vec3(modelMatrix * vec4(tangent, 0.0)));
-    vec3 B = normalize(vec3(modelMatrix * vec4(bitangent, 0.0)));
-    vec3 N = normalize(Normal - dot(Normal, T) * T - dot(Normal, B) * B); //TODO
-    mat3 TBN = mat3(T, B, N);
+    //vec3 T = normalize(vec3(modelMatrix * vec4(tangent, 0.0)));
+    //vec3 B = normalize(vec3(modelMatrix * vec4(bitangent, 0.0)));
+    //vec3 N = normalize(Normal - dot(Normal, T) * T - dot(Normal, B) * B); //TODO
+    //mat3 TBN = mat3(T, B, N);
 
     TexCoords = uv;
 

@@ -25,13 +25,13 @@ void Model::animate(Shader& shader, mat4 modelMatrix, float currentTime, vec3 di
 void Model::loadModel(string const& path)
 {
 	scene = importer.ReadFile(
-		path, 
+		path,
 		aiProcess_Triangulate |
 		aiProcess_GenSmoothNormals |
 		aiProcess_CalcTangentSpace | //for tangents and bitangents
 		aiProcess_JoinIdenticalVertices
 		//aiProcess_FlipUVs
-		);
+	);
 
 	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) // if is Not Zero
 	{
@@ -42,7 +42,6 @@ void Model::loadModel(string const& path)
 	directory = path.substr(0, path.find_last_of('/'));
 	std::cout << "Model directory: " << directory << endl;
 
-	globalInverseTransform = scene->mRootNode->mTransformation.Inverse();
 	processNode(scene->mRootNode);
 }
 
@@ -120,15 +119,15 @@ Mesh Model::processMesh(aiMesh* mesh)
 	}
 
 	// bones
-	for(unsigned int i = 0; i < mesh->mNumBones; i++)
+	for (unsigned int i = 0; i < mesh->mNumBones; i++)
 	{
 		aiBone* bone = mesh->mBones[i];
 		string boneName(bone->mName.C_Str());
 		int boneID = -1;
-		boneCounter++;
 
 		if (boneInfoMap.find(boneName) == boneInfoMap.end())
 		{
+			boneCounter++;
 			BoneInfo newBoneInfo;
 			boneID = (int)boneInfoMap.size();
 			newBoneInfo.id = boneID;
@@ -169,7 +168,7 @@ Mesh Model::processMesh(aiMesh* mesh)
 			indices.push_back(face.mIndices[j]);
 		}
 	}
-	
+
 	// material textures
 	loadMaterialTextures(mesh, meshTextures);
 
@@ -201,7 +200,7 @@ void Model::loadMaterialTextures(aiMesh* mesh, std::vector<std::shared_ptr<Textu
 	aiTextureType types[3] = { aiTextureType_DIFFUSE, aiTextureType_SPECULAR, aiTextureType_NORMALS }; //TODO add more?
 	string typeNames[3] = { "diffuseTexture", "specularTexture", "normalTexture" };
 
-	for(int i = 0; i < 3; i++)
+	for (int i = 0; i < 3; i++)
 	{
 		aiTextureType type = types[i];
 		const string& typeName = typeNames[i];
@@ -237,10 +236,10 @@ void Model::loadMaterialTextures(aiMesh* mesh, std::vector<std::shared_ptr<Textu
 	}
 
 	// If no diffuse texture found, use default texture TODO
-	if(material->GetTextureCount(aiTextureType_DIFFUSE) == 0)
+	if (material->GetTextureCount(aiTextureType_DIFFUSE) == 0)
 	{
 		cout << "No diffuse texture found for mesh. Using default texture" << endl;
-		
+
 		shared_ptr<Texture> tex = make_shared<Texture>();
 		tex->loadFromFile("src/diffuse.jpg");
 		tex->type = "diffuseTexture";
@@ -252,11 +251,11 @@ void Model::loadMaterialTextures(aiMesh* mesh, std::vector<std::shared_ptr<Textu
 vector<mat4> Model::getBoneTransforms(float timeInSeconds, mat4 globalTransform)
 {
 	finalBoneMatrices.resize(boneCounter);
-	if (scene->mNumAnimations > 0)
+	if (scene && scene->mNumAnimations > 0)
 	{
 		if (animation == nullptr)
 		{
-			animation = scene->mAnimations[0];
+			animation = scene->mAnimations[0]; // Mixamorig_Hips
 		}
 		float ticksPerSecond = animation->mTicksPerSecond;
 		float timeInTicks = timeInSeconds * ticksPerSecond;
@@ -268,7 +267,7 @@ vector<mat4> Model::getBoneTransforms(float timeInSeconds, mat4 globalTransform)
 	{
 		for (unsigned int i = 0; i < finalBoneMatrices.size(); i++)
 		{
-			finalBoneMatrices.push_back(mat4(1.0f));
+			finalBoneMatrices[i] = mat4(1.0f);
 		}
 	}
 	return finalBoneMatrices;
@@ -278,8 +277,8 @@ void Model::readNodeHierarchy(float animationTimeTicks, const aiNode* node, cons
 {
 	string nodeName = node->mName.data;
 	mat4 nodeTransform = convertAiMatrixToGlm(node->mTransformation);
-	const aiNodeAnim* nodeAnim = findNodeAnim(animation, string(node->mName.C_Str()));
-	
+	const aiNodeAnim* nodeAnim = findNodeAnim(animation, node->mName.data);
+
 	if (nodeAnim)
 	{
 		mat4 scalingMat = CalcInterpolatedScaling(animationTimeTicks, nodeAnim);
@@ -289,15 +288,29 @@ void Model::readNodeHierarchy(float animationTimeTicks, const aiNode* node, cons
 	}
 
 	mat4 globalTransform = parentTransform * nodeTransform;
+	aiMatrix4x4 globalInverseTransform = scene->mRootNode->mTransformation;//.Inverse();
 
-	if(boneInfoMap.find(nodeName) != boneInfoMap.end())
+	if (boneInfoMap.find(nodeName) != boneInfoMap.end())
 	{
 		int boneID = boneInfoMap[nodeName].id;
-		boneInfoMap[nodeName].finalTransformation = convertAiMatrixToGlm(globalInverseTransform) * globalTransform * boneInfoMap[nodeName].offset;
-		finalBoneMatrices[boneID] = convertAiMatrixToGlm(globalInverseTransform) * globalTransform * boneInfoMap[nodeName].offset;
+		boneInfoMap[nodeName].finalTransformation = /*convertAiMatrixToGlm(globalInverseTransform)* */ globalTransform * boneInfoMap[nodeName].offset;
+		finalBoneMatrices[boneID] = /*convertAiMatrixToGlm(globalInverseTransform) **/  globalTransform * boneInfoMap[nodeName].offset;
+		if (test < 2) {
+			cout << "Bone name: " << nodeName << endl;
+			cout << "Bone ID: " << boneID << endl;
+			cout << "Final transformation: " << glm::to_string(boneInfoMap[nodeName].finalTransformation) << endl;
+		}
 	}
 
-	for(unsigned int i = 0; i < node->mNumChildren; i++)
+	if (test == 0) {
+		test++;
+		cout << "parentTransform: " << glm::to_string(parentTransform) << endl;
+		cout << "nodeTransform: " << glm::to_string(nodeTransform) << endl;
+		cout << "globalTransform: " << glm::to_string(globalTransform) << endl;
+		cout << "globalInverseTransform: " << glm::to_string(globalTransform) << endl;
+	}
+
+	for (unsigned int i = 0; i < node->mNumChildren; i++)
 	{
 		readNodeHierarchy(animationTimeTicks, node->mChildren[i], globalTransform);
 	}

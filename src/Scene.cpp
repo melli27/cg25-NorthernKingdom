@@ -23,63 +23,105 @@ Scene::~Scene() {
 
 void Scene::init() {
 
-	// Create shaders
+	// Lighting shader
 	lightSourceShader.createLightSourceShader();
 	lightingShader.createLightingShader();
+
+	// Depth shaders
+	depthShader.createDepthShader();
+	pointDepthShader.createPointDepthShader();
+
+	// Terrain and animated model shaders
 	terrainShader.createTerrainShader();
+	animatedModelShader.createAnimatedModelShader();
 
-	DirectionalLight dirLight = DirectionalLight(
-		glm::vec3(-0.4f, -0.6f, -0.2f),
-		glm::vec3(1.0f, 0.9f, 0.7f),
-		glm::vec3(0.2f),
-		glm::vec3(0.9f, 0.6f, 0.4f),
-		glm::vec3(0.9f, 0.9f, 0.8f)
-	);
-
-	PointLight pointLight = PointLight(
-		glm::vec3(-4.0f, -1.5f, -3.0f),
-		glm::vec3(1.0f),
-		glm::vec3(0.2f),
-		glm::vec3(0.5f),
-		glm::vec3(1.0f),
-		glm::vec3(1.0f, 0.09f, 0.032f)
-	);
-
+	// Setup Lights
 	lightManager->addDirectionalLight(dirLight);
 	lightManager->addPointLight(pointLight);
 	lightManager->applyToShader(lightingShader);
+	lightSpaceMatrix = lightManager->calculateLightSpaceMatrix();
+	shadowTransforms = lightManager->calculateShadowTransforms();
 
 	// Load Terrain / Models
 	lightCube = new Geometry(glm::translate(glm::mat4(1.0f), pointLight.position), Geometry::createCubeGeometry(0.2f, 0.2f, 0.2f));
+	testCube = new Geometry(glm::translate(glm::mat4(1.0f), glm::vec3(2.0f, 0.0f, 2.0f)), Geometry::createCubeGeometry(1.0f, 1.0f, 1.0f));
+	testCube->transform(glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -2.45f, 0.0f)));
+	//lightCube = new Geometry(glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f)), Geometry::createCubeGeometry(0.2f, 0.2f, 0.2f));
 	terrain = new Terrain(terrainShader, "assets/heightmap.png");
 	backpack = new Model("assets/models/backpack/backpack.obj");
 	castleGuard = new Model("assets/models/castle_guard/castle_guard.dae");
 
 	// Load Animations
-	//castleGuardAnimation = new Animation(castleGuard, 0);
-	//castleGuardPlayer = new AnimationPlayer(castleGuardAnimation);
-	//castleGuardPlayer->setLoop(true);
-	//castleGuardPlayer->setSpeed(0.8f);
-	//castleGuardPlayer->play();
 
 	// Setup Model Transforms
 	backpackModelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(-2.0f, -2.0f, -3.0f));
 	backpackModelMatrix = glm::scale(backpackModelMatrix, glm::vec3(0.3f));
-
-	castleGuardModelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(3.0f, 0.0f, -4.0f));
-	castleGuardModelMatrix = glm::scale(castleGuardModelMatrix, glm::vec3(0.3f));
-	
+	castleGuardModelMatrix = glm::mat4(1.0f); //glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
+	castleGuardModelMatrix = glm::scale(castleGuardModelMatrix, glm::vec3(0.01f));
 	terrainModelMatrix = glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 36.0f, 0.0f)), glm::vec3(0.5f));
+
+	// Setup Depthmap
+	depthmap = new Depthmap();
+	depthmap->initDepthmap();
 
 }
 
-void Scene::render(float deltaTime) {
-
-	//castleGuardPlayer->update(deltaTime);
-
+void Scene::render(int window_width, int window_height, float deltaTime)
+{
 	glm::mat4 view = camera->getViewMatrix();
 	glm::mat4 projection = camera->getProjectionMatrix();
 	glm::mat4 viewProj = projection * view;
+
+	// 1. pass: render to depth map
+	// ----------------------------
+	depthmap->renderToDepthmap();
+	depthShader.setUniformMatrix4fv("lightSpaceMatrix", 1, GL_FALSE, lightSpaceMatrix);
+
+	// Backpack depth
+	depthShader.setUniformMatrix4fv("modelMatrix", 1, GL_FALSE, backpackModelMatrix);
+	backpack->draw(depthShader);
+
+	// Testcube draw
+	depthShader.setUniformMatrix4fv("modelMatrix", 1, GL_FALSE, testCube->getModelMatrix());
+	testCube->draw();
+
+	// 1. pass: render to depth cubemap
+	// --------------------------------
+	glCullFace(GL_BACK);
+	glDisable(GL_CULL_FACE);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	depthmap->renderToDepthCubemap();
+
+	pointDepthShader.setUniform("lightPos", pointLight.position);
+	pointDepthShader.setUniform("farPlane", 25.0f); //TODO get from lightmanager pointfarplane
+	for (unsigned int i = 0; i < 6; ++i)
+		pointDepthShader.setUniformMatrix4fv("shadowMatrices[" + std::to_string(i) + "]", 1, GL_FALSE, shadowTransforms[i]);
+
+	// Backpack depth
+	pointDepthShader.setUniformMatrix4fv("modelMatrix", 1, GL_FALSE, backpackModelMatrix);
+	backpack->draw(pointDepthShader);
+
+	// Test cube draw
+	pointDepthShader.setUniform("modelMatrix", testCube->getModelMatrix());
+	testCube->draw();
+
+	//glDisable(GL_POLYGON_OFFSET_FILL);
+	glCullFace(GL_BACK);
+	glDisable(GL_CULL_FACE);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	// 2. pass: render scene normally with shadow mapping
+	// --------------------------------------------------
+	depthmap->normalRenderSetup(window_width, window_height);
+
+	// Render castle guard with animation
+	renderManager->renderAnimatedModel(castleGuard, animatedModelShader, castleGuardModelMatrix, camera->position, viewProj);
+
+	// Render backpack with lighting
+	renderManager->renderShadedModel(backpack, lightingShader, backpackModelMatrix, camera->position, viewProj, lightSpaceMatrix);
+
+	// Render light cube
+	renderManager->renderLightCube(lightCube, lightSourceShader, viewProj);
 
 	// Render terrain
 	TerrainRenderParams terrainParams;
@@ -88,17 +130,7 @@ void Scene::render(float deltaTime) {
 	terrainParams.maxDistance = 30.0f;
 	terrainParams.minTessLevel = 2.0f;
 	terrainParams.maxTessLevel = 16.0f;
-
 	renderManager->renderTerrain(terrain, terrainShader, terrainModelMatrix, view, projection, terrainParams);
-
-	// Render castle guard with animation
-	renderManager->renderAnimatedModel(castleGuard, lightingShader, castleGuardModelMatrix, camera, viewProj);
-
-	// Render backpack with lighting
-	renderManager->renderModel(backpack, lightingShader, backpackModelMatrix, camera, viewProj);
-
-	// Render light cube
-	renderManager->renderLightCube(lightCube,lightSourceShader, viewProj);
 
 	glDisable(GL_CULL_FACE);
 	terrain->Draw(terrainShader);

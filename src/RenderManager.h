@@ -21,10 +21,11 @@ public:
     ~RenderManager();
 
     // Render different object types
-    void renderModel(Model* model, Shader& shader, const glm::mat4& modelMatrix,
-        Camera* camera, const glm::mat4& viewProj);
+    void renderModel(Model* model, Shader& shader, const glm::mat4& modelMatrix, vec3 cameraPostion, const glm::mat4& viewProj);
 
-    void renderAnimatedModel(Model* model, Shader& shader, const glm::mat4& modelMatrix, Camera* camera, const glm::mat4& viewProj);
+    void renderShadedModel(Model* model, Shader& shader, const glm::mat4& modelMatrix, vec3 cameraPosition, const glm::mat4& viewProj, const mat4& lightspaceMatrix);
+
+    void renderAnimatedModel(Model* model, Shader& shader, const glm::mat4& modelMatrix, vec3 cameraPosition, const glm::mat4& viewProj);
 
     void renderLightCube(Geometry* lightCube, Shader& shader, const glm::mat4& viewProj);
 

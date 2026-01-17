@@ -20,7 +20,11 @@ public:
     void createNormalShader();
     void createLightingShader();
 	void createLightSourceShader();
+    void createDepthShader();
+    void createPointDepthShader();
+
     void createTerrainShader();
+    void createAnimatedModelShader();
 
     GLuint compileShader(GLuint type, const std::string& path) const;
     void activate();

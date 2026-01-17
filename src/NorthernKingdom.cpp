@@ -97,7 +97,7 @@ int main()
 		glm::mat4 view = camera.getViewMatrix();
 		glm::mat4 projection = camera.getProjectionMatrix();
 
-		scene.render(deltaTime);
+		scene.render(window_width, window_height, deltaTime);
 
 		//if (!polygonMode) glEnable(GL_CULL_FACE);
 

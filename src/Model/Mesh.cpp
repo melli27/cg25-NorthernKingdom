@@ -1,10 +1,12 @@
 #include "Mesh.h"
 
-#define POSITION_LOCATION    0
-#define NORMAL_LOCATION      1
-#define TEX_COORD_LOCATION   2
-#define BONE_ID_LOCATION     3
-#define BONE_WEIGHT_LOCATION 4
+#define POSITION_LOCATION	0
+#define NORMAL_LOCATION		1
+#define TEX_COORD_LOCATION	2
+#define TANGENT_LOCATION	3
+#define BITANGENT_LOCATION	4
+#define BONE_ID_LOCATION	5
+#define BONE_WEIGHT_LOCATION 6
 
 Mesh::Mesh(vector<Vertex> vertices, vector<unsigned int> indices, vector<shared_ptr<Texture>> textures)
 {
@@ -78,19 +80,19 @@ void Mesh::setupMesh()
 	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, TexCoords));
 	
 	// vertex tangent
-	glEnableVertexAttribArray(BONE_ID_LOCATION);
+	glEnableVertexAttribArray(TANGENT_LOCATION);
 	glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Tangent));
 	
 	// vertex bitangent
-	glEnableVertexAttribArray(BONE_WEIGHT_LOCATION);
+	glEnableVertexAttribArray(BITANGENT_LOCATION);
 	glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Bitangent));
 	// bone
 	//ids
-	glEnableVertexAttribArray(5);
+	glEnableVertexAttribArray(BONE_ID_LOCATION);
 	glVertexAttribIPointer(5, 4, GL_INT, sizeof(Vertex), (void*)offsetof(Vertex, boneIDs));
 
 	// weights
-	glEnableVertexAttribArray(6);
+	glEnableVertexAttribArray(BONE_WEIGHT_LOCATION);
 	glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, weights));
 	
 	glBindVertexArray(0);

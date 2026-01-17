@@ -33,6 +33,7 @@ public:
 
 private:
 
+	unsigned int test = 5;
 	Assimp::Importer importer;
 	const aiScene* scene = nullptr;
 	const aiAnimation* animation = nullptr;
@@ -49,7 +50,7 @@ private:
 	unsigned int boneCounter = 0;
 
 	// animation data
-	aiMatrix4x4 globalInverseTransform;
+	//aiMatrix4x4 globalInverseTransform;
 	vector<mat4> finalBoneMatrices;
 
 	// model loading
