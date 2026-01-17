@@ -31,6 +31,7 @@ in vec3 FragPos;
 in vec3 Normal;  
 in vec2 TexCoords;
 in mat3 TBN;
+in vec4 FragPosLightSpace;
 
 out vec4 FragColor;
 
@@ -39,47 +40,108 @@ uniform bool normalMapping = true;
 uniform Material material;
 uniform DirectionalLight dirLight;
 uniform PointLight pointLight;
+uniform sampler2D shadowMap;
+uniform samplerCube pointShadowMap;
+uniform float farPlane;
 
-vec3 calculateAmbientReflection()
+vec3 sampleOffsetDirections[20] = vec3[]
+(
+   vec3( 1,  1,  1), vec3( 1, -1,  1), vec3(-1, -1,  1), vec3(-1,  1,  1), 
+   vec3( 1,  1, -1), vec3( 1, -1, -1), vec3(-1, -1, -1), vec3(-1,  1, -1),
+   vec3( 1,  1,  0), vec3( 1, -1,  0), vec3(-1, -1,  0), vec3(-1,  1,  0),
+   vec3( 1,  0,  1), vec3(-1,  0,  1), vec3( 1,  0, -1), vec3(-1,  0, -1),
+   vec3( 0,  1,  1), vec3( 0, -1,  1), vec3( 0, -1, -1), vec3( 0,  1, -1)
+);
+
+float calculateShadow(vec4 fragPosLightSpace, vec3 normal, vec3 lightDir)
 {
-    return dirLight.ambient * vec3(texture(material.diffuseTexture, TexCoords));
+    vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
+    projCoords = projCoords * 0.5 + 0.5;
+
+    if (projCoords.z > 1.0)
+        return 0.0;
+    
+    float bias = max(0.0025 * (1.0 - dot(normal, lightDir)), 0.0005);
+
+    float shadow = 0.0;
+    vec2 texelSize = 1.0 / vec2(textureSize(shadowMap, 0));
+    for (int x = -1; x <= 1; ++x)
+    {
+        for (int y = -1; y <= 1; ++y)
+        {
+            float pcfDepth = texture(shadowMap, projCoords.xy + vec2(x, y) * texelSize).r;
+            float currentDepth = projCoords.z;
+            shadow += currentDepth - bias > pcfDepth ? 1.0 : 0.0;        
+        }    
+    }
+    shadow /= 9.0;
+
+    return shadow;
+}  
+
+float calculatePointShadow(vec3 fragPos, vec3 lightPos, vec3 normal, vec3 lightDir)
+{   
+    vec3 fragToLight = fragPos - lightPos;
+    float currentDepth = length(fragToLight);
+    float shadow = 0.0;
+    float bias = max(0.0025 * (1.0 - dot(normal, lightDir)), 0.0005);
+    int samples  = 20;
+    float diskRadius = (1.0 + (length(viewPos - fragPos) / farPlane)) / 25.0;  
+
+    for (int i = 0; i < samples; ++i)
+    {
+        float closestDepth = texture(pointShadowMap, fragToLight + sampleOffsetDirections[i] * diskRadius).r;
+        closestDepth *= farPlane;
+        shadow += currentDepth - bias > closestDepth ? 1.0 : 0.0;
+    }
+    shadow /= float(samples);
+
+    return shadow;
 }
 
-vec3 calculateDiffuseReflection(vec3 normal, vec3 lightDir)
+vec3 calculateAmbientReflection(vec3 lightAmbient)
 {
-    return dirLight.diffuse * vec3(texture(material.diffuseTexture, TexCoords)) * dirLight.color * max(dot(normal, lightDir), 0.0);
+    return lightAmbient * vec3(texture(material.diffuseTexture, TexCoords));
 }
 
-vec3 calculateSpecularReflection(vec3 normal, vec3 lightDir, vec3 viewDir)
+vec3 calculateDiffuseReflection(vec3 lightDiffuse, vec3 lightColor, vec3 normal, vec3 lightDir)
+{
+    return lightDiffuse * vec3(texture(material.diffuseTexture, TexCoords)) * lightColor * max(dot(normal, lightDir), 0.0);
+}
+
+vec3 calculateSpecularReflection(vec3 lightSpecular, vec3 lightColor, vec3 normal, vec3 lightDir, vec3 viewDir)
 {
     vec3 halfwayVector = normalize(lightDir + viewDir);
-    return dirLight.specular * vec3(texture(material.specularTexture, TexCoords)) * dirLight.color * pow(max(dot(normal, halfwayVector), 0.0), material.shininess);
+    return lightSpecular * vec3(texture(material.specularTexture, TexCoords)) * lightColor * pow(max(dot(normal, halfwayVector), 0.0), material.shininess);
 }
 
 vec3 calculateDirLight(vec3 normal, vec3 viewDir)
 {
     vec3 lightDir = normalize(-dirLight.direction);
 
-    vec3 ambient = calculateAmbientReflection();
-    vec3 diffuse = calculateDiffuseReflection(normal, lightDir);
-    vec3 specular = calculateSpecularReflection(normal, lightDir, viewDir);
+    vec3 ambient = calculateAmbientReflection(dirLight.ambient);
+    vec3 diffuse = calculateDiffuseReflection(dirLight.diffuse, dirLight.color, normal, lightDir);
+    vec3 specular = calculateSpecularReflection(dirLight.specular, dirLight.color, normal, lightDir, viewDir);
 
-    return ambient + diffuse + specular;
+    float shadow = calculateShadow(FragPosLightSpace, normal, lightDir);
+
+    return ambient + (1.0 - shadow) * (diffuse + specular);
 }
 
 vec3 calculatePointLight(vec3 normal, vec3 viewDir)
 {
     vec3 lightDir = normalize(pointLight.position - FragPos);
 
-    vec3 ambient = calculateAmbientReflection();
-    vec3 diffuse = calculateDiffuseReflection(normal, lightDir);
-    vec3 specular = calculateSpecularReflection(normal, lightDir, viewDir);
+    vec3 ambient = calculateAmbientReflection(pointLight.ambient);
+    vec3 diffuse = calculateDiffuseReflection(pointLight.diffuse, pointLight.color, normal, lightDir);
+    vec3 specular = calculateSpecularReflection(pointLight.specular, pointLight.color, normal, lightDir, viewDir);
 
     float distance = length(pointLight.position - FragPos);
     float attenuation = 1.0 / (pointLight.attenuation.x + pointLight.attenuation.y * distance + pointLight.attenuation.z * pow(distance, 2.0));
 
-    
-    return (ambient + diffuse + specular) * attenuation;
+    float shadow = calculatePointShadow(FragPos, pointLight.position, normal, lightDir);    
+
+    return (ambient + (1.0 - shadow) * (diffuse + specular)) * attenuation;
 }
 
 
@@ -101,10 +163,7 @@ void main()
 
     vec3 viewDir = normalize(viewPos - FragPos);
     vec3 color = calculateDirLight(normal, viewDir); // Blinn-Phong for directional light 
-    color += calculatePointLight(normal, viewDir); // Blinn-Phong for point light
+    //color += calculatePointLight(normal, viewDir); // Blinn-Phong for point light
     FragColor = vec4(color, 1.0);
     //FragColor = texture(material.diffuseTexture, TexCoords);
 }
-
-
-

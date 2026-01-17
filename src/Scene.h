@@ -7,6 +7,7 @@
 #include "Camera.h"
 #include "Lights/LightManager.h"
 #include "RenderManager.h"
+#include "Shadows/ShadowManager.h"
 
 class Scene {
 public:
@@ -22,6 +23,7 @@ private:
 
     RenderManager* renderManager;
 	LightManager* lightManager;
+    ShadowManager* shadowManager;
 
     Shader lightSourceShader;
     Shader lightingShader;
@@ -32,7 +34,11 @@ private:
 	Model* castleGuard;
     Geometry* lightCube;
 
+	DirectionalLight dirLight;
+	PointLight pointLight;
+
     glm::mat4 backpackModelMatrix;
 	glm::mat4 castleGuardModelMatrix;
     glm::mat4 terrainModelMatrix;
+	glm::mat4 lightCubeModelMatrix;
 };

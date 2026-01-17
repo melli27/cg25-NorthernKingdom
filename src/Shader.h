@@ -21,6 +21,8 @@ public:
     void createLightingShader();
 	void createLightSourceShader();
     void createTerrainShader();
+    void createDepthShader();
+    void createPointDepthShader();
 
     GLuint compileShader(GLuint type, const std::string& path) const;
     void activate();

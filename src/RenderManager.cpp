@@ -45,14 +45,14 @@ void RenderManager::renderAnimatedModel(Model* model, Shader& shader, const glm:
 }
 
 
-void RenderManager::renderLightCube(Geometry* lightCube, Shader& shader, const glm::mat4& viewProj) {
+void RenderManager::renderLightCube(Geometry* lightCube, Shader& shader, const glm::mat4& modelMatrix, const glm::mat4& viewProj) {
 	if (!lightCube) {
 		return;
 	}
 
 	shader.activate();
 	shader.setUniform("viewProjMatrix", viewProj);
-	shader.setUniform("modelMatrix", lightCube->getModelMatrix());
+	shader.setUniform("modelMatrix", modelMatrix);
 	shader.setUniform("normalMatrix", lightCube->getNormalMatrix());
 
 	lightCube->draw();

@@ -14,11 +14,13 @@ uniform bool isAnimated;
 
 uniform mat4 modelMatrix;
 uniform mat4 viewProjMatrix;
+uniform mat4 lightSpaceMatrix;
 
 out vec3 FragPos;
 out vec3 Normal;
 out vec2 TexCoords;
 out mat3 TBN;
+out vec4 FragPosLightSpace;
 
 void main()
 {
@@ -60,6 +62,7 @@ void main()
     mat3 TBN = mat3(T, B, N);
 
     TexCoords = uv;
+    FragPosLightSpace = lightSpaceMatrix * vertexPos;
 
     gl_Position = viewProjMatrix * vertexPos;
 }

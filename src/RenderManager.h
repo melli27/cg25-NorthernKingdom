@@ -26,7 +26,7 @@ public:
 
     void renderAnimatedModel(Model* model, Shader& shader, const glm::mat4& modelMatrix, Camera* camera, const glm::mat4& viewProj);
 
-    void renderLightCube(Geometry* lightCube, Shader& shader, const glm::mat4& viewProj);
+    void renderLightCube(Geometry* lightCube, Shader& shader, const glm::mat4& modelMatrix, const glm::mat4& viewProj);
 
     void renderTerrain(Terrain* terrain, Shader& shader, const glm::mat4& modelMatrix,
         const glm::mat4& view, const glm::mat4& projection,

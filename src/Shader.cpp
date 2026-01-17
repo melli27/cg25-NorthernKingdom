@@ -97,6 +97,43 @@ void Shader::createTerrainShader()
 	glDeleteShader(tessEvalShader);
 }
 
+void Shader::createDepthShader()
+{
+	shader = glCreateProgram();
+	GLuint vertexShader = compileShader(GL_VERTEX_SHADER, "src/Shader/depth_vert.shader");
+	GLuint fragmentShader = compileShader(GL_FRAGMENT_SHADER, "src/Shader/depth_frag.shader");
+
+	glAttachShader(shader, vertexShader);
+	glAttachShader(shader, fragmentShader);
+	glLinkProgram(shader);
+	glValidateProgram(shader);
+
+	ID = shader;
+
+	glDeleteShader(vertexShader);
+	glDeleteShader(fragmentShader);
+}
+
+void Shader::createPointDepthShader()
+{
+	shader = glCreateProgram();
+	GLuint vertexShader = compileShader(GL_VERTEX_SHADER, "src/Shader/point_depth_vert.shader");
+	GLuint geometryShader = compileShader(GL_GEOMETRY_SHADER, "src/Shader/point_depth_geom.shader");
+	GLuint fragmentShader = compileShader(GL_FRAGMENT_SHADER, "src/Shader/point_depth_frag.shader");
+
+	glAttachShader(shader, vertexShader);
+	glAttachShader(shader, geometryShader);
+	glAttachShader(shader, fragmentShader);
+	glLinkProgram(shader);
+	glValidateProgram(shader);
+
+	ID = shader;
+
+	glDeleteShader(vertexShader);
+	glDeleteShader(geometryShader);
+	glDeleteShader(fragmentShader);
+}
+
 void Shader::activate() {
 	glUseProgram(shader);
 }
