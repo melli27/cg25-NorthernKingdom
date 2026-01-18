@@ -9,6 +9,14 @@ enum Camera_Movement {
 	RIGHT
 };
 
+struct CameraPose {
+	glm::vec3 position;
+	float yaw;
+	float pitch;
+	float fov;
+	float time;
+};
+
 class Camera {
 public:
 	glm::vec3 position;
@@ -54,6 +62,19 @@ public:
 	void rotate(float xoffset, float yoffset, bool constrainPitch = true);
 	void zoom(float yoffset);
 
+	void setPose(const glm::vec3& pos, float yawAngle, float pitchAngle, float fovRad);
+	bool readRecordedCameraPath(const std::string& filePath);
+	void startPlayback(float timeSeconds);
+	void stopPlayback();
+	bool getPlaybackMode() const { return playbackMode; }
+	bool updatePlayback(float timeSeconds);
+
 private:
 	void updateCameraVectors();
+
+	std::vector<CameraPose> recordedPoses;
+	bool playbackMode = false;
+	float playbackStartTime = 0.0f;
+	float pathStartTime = 0.0f;
+	size_t currentPoseIndex = 0;
 };
