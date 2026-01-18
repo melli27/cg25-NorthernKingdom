@@ -8,6 +8,7 @@
 #include "Lights/LightManager.h"
 #include "RenderManager.h"
 #include <Depthmap.h>
+#include <Animator.h>
 
 class Scene {
 public:
@@ -41,6 +42,9 @@ private:
 	Model* castleGuard;
     Geometry* lightCube;
     Geometry* testCube;
+
+	Animation* castleGuardAnimation;
+    Animator* animator;
 
     glm::mat4 backpackModelMatrix;
 	glm::mat4 castleGuardModelMatrix;

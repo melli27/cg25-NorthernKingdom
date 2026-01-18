@@ -11,7 +11,7 @@ struct Material
 in vec3 FragPos;  
 in vec2 TexCoords;
 //in vec3 Normal;
-
+flat in ivec4 oboneIDs;
 //in mat3 TBN;
 
 out vec4 FragColor;

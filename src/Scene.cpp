@@ -47,17 +47,21 @@ void Scene::init() {
 	testCube = new Geometry(glm::translate(glm::mat4(1.0f), glm::vec3(2.0f, 0.0f, 2.0f)), Geometry::createCubeGeometry(1.0f, 1.0f, 1.0f));
 	testCube->transform(glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -2.45f, 0.0f)));
 	//lightCube = new Geometry(glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f)), Geometry::createCubeGeometry(0.2f, 0.2f, 0.2f));
+
 	terrain = new Terrain(terrainShader, "assets/heightmap.png");
 	backpack = new Model("assets/models/backpack/backpack.obj", false);
+	//castleGuard = new Model("assets/models/Reaction/reaction.dae", true);
 	castleGuard = new Model("assets/models/castle_guard/castle_guard.dae", true);
-
+	
 	// Load Animations
+	castleGuardAnimation = new Animation("assets/models/Reaction/Reaction.dae", castleGuard);
+	animator = new Animator(castleGuardAnimation);
 
 	// Setup Model Transforms
 	backpackModelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(-2.0f, -2.0f, -3.0f));
 	backpackModelMatrix = glm::scale(backpackModelMatrix, glm::vec3(0.3f));
 	castleGuardModelMatrix = glm::mat4(1.0f); //glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
-	castleGuardModelMatrix = glm::scale(castleGuardModelMatrix, glm::vec3(0.01f));
+	//castleGuardModelMatrix = glm::scale(castleGuardModelMatrix, glm::vec3(0.5f));
 	terrainModelMatrix = glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 36.0f, 0.0f)), glm::vec3(0.5f));
 
 	// Setup Depthmap
@@ -115,7 +119,9 @@ void Scene::render(int window_width, int window_height, float deltaTime)
 	depthmap->normalRenderSetup(window_width, window_height);
 
 	// Render castle guard with animation
-	renderManager->renderAnimatedModel(castleGuard, animatedModelShader, castleGuardModelMatrix, camera->position, viewProj);
+	animator->UpdateAnimation(deltaTime);
+	auto transforms = animator->GetFinalBoneMatrices();
+	renderManager->renderAnimatedModel(castleGuard, animatedModelShader, castleGuardModelMatrix, camera->position, viewProj, transforms);
 
 	// Render backpack with lighting
 	renderManager->renderShadedModel(backpack, lightingShader, backpackModelMatrix, camera->position, viewProj, lightSpaceMatrix);

@@ -47,7 +47,7 @@ int main()
 
 	// glfw window creation
 	// --------------------
-	GLFWwindow* window = glfwCreateWindow(reader.GetInteger("window", "width", 800), ("window", "height", 800), "Northern Kingdom", nullptr, nullptr);
+	GLFWwindow* window = glfwCreateWindow(reader.GetInteger("window", "width", 800), reader.GetInteger("window", "height", 800), "Northern Kingdom", nullptr, nullptr);
 	if (window == NULL)
 	{
 		std::cout << "Failed to create GLFW window" << std::endl;

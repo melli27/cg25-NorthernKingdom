@@ -6,10 +6,10 @@ layout(location = 2) in vec2 uv;
 layout(location = 3) in vec3 tangent;
 layout(location = 4) in vec3 bitangent;
 layout(location = 5) in ivec4 boneIDs;
-layout(location = 6) in vec4 weigths;
+layout(location = 6) in vec4 weights;
 
-const int MAX_BONES = 100;
-uniform mat4 boneMatrices[100];
+const int MAX_BONES = 200;
+uniform mat4 boneMatrices[200];
 uniform bool isAnimated;
 
 uniform mat4 modelMatrix;
@@ -18,6 +18,7 @@ uniform mat4 viewProjMatrix;
 out vec3 FragPos;
 out vec3 Normal;
 out vec2 TexCoords;
+out ivec4 oboneIDs;
 //out mat3 TBN;
 
 void main()
@@ -26,16 +27,16 @@ void main()
 
     if(isAnimated)
     {
-        mat4 boneTransform = boneMatrices[boneIDs[0]] * weigths[0];
-        boneTransform += boneMatrices[boneIDs[1]] * weigths[1];
-        boneTransform += boneMatrices[boneIDs[2]] * weigths[2];
-        boneTransform += boneMatrices[boneIDs[3]] * weigths[3];
+        mat4 boneTransform = boneMatrices[boneIDs[0]] * weights[0];
+        boneTransform += boneMatrices[boneIDs[1]] * weights[1];
+        boneTransform += boneMatrices[boneIDs[2]] * weights[2];
+        boneTransform += boneMatrices[boneIDs[3]] * weights[3];
 
         // Apply bone transformation to vertex position and normal
-        //vertexPos = (modelMatrix * boneTransform) * vec4(position, 1.0);
-        //vertexPos = vec4(transpose(inverse(modelMatrix * boneTransform))) * vec4(position, 1.0);
-        vertexPos = boneTransform * vec4(position, 1.0);
-        Normal = mat3(transpose(inverse(modelMatrix * boneTransform))) * normal;
+        vec4 skinnedPos = boneTransform * vec4(position, 1.0);
+        vertexPos = modelMatrix * skinnedPos;
+        mat3 normalMat = mat3(transpose(inverse(modelMatrix)));
+        Normal = normalMat * mat3(boneTransform) * normal;    
     }
     else
     {
@@ -45,12 +46,7 @@ void main()
 
     FragPos = vec3(vertexPos);
 
-    //vec3 T = normalize(vec3(modelMatrix * vec4(tangent, 0.0)));
-    //vec3 B = normalize(vec3(modelMatrix * vec4(bitangent, 0.0)));
-    //vec3 N = normalize(Normal - dot(Normal, T) * T - dot(Normal, B) * B); //TODO
-    //mat3 TBN = mat3(T, B, N);
-
     TexCoords = uv;
-
+    oboneIDs = boneIDs;
     gl_Position = viewProjMatrix * vertexPos;
 }

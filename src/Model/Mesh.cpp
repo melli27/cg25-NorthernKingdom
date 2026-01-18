@@ -55,15 +55,15 @@ void Mesh::setupMesh()
 {
 	// create buffers/arrays
 	glGenVertexArrays(1, &VAO);
-	glGenBuffers(1, &VBO);
-	glGenBuffers(1, &EBO);
-
 	glBindVertexArray(VAO);
 
 	// load data into vertex buffers
+	glGenBuffers(1, &VBO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), &vertices[0], GL_STATIC_DRAW);
 
+	//indices
+	glGenBuffers(1, &EBO);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), &indices[0], GL_STATIC_DRAW);
 
@@ -86,6 +86,7 @@ void Mesh::setupMesh()
 	// vertex bitangent
 	glEnableVertexAttribArray(BITANGENT_LOCATION);
 	glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Bitangent));
+	
 	// bone
 	//ids
 	glEnableVertexAttribArray(BONE_ID_LOCATION);
@@ -98,3 +99,17 @@ void Mesh::setupMesh()
 	glBindVertexArray(0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
+
+//glGenBuffers(1, &bonesVBO);
+//glBindBuffer(GL_ARRAY_BUFFER, bonesVBO);
+//glBufferData(GL_ARRAY_BUFFER, boneData.size() * sizeof(BoneData), &boneData[0], GL_STATIC_DRAW);
+//glEnableVertexAttribArray(BONE_ID_LOCATION);
+//glVertexAttribIPointer(BONE_ID_LOCATION, 4, GL_UNSIGNED_INT, sizeof(BoneData), (void*)offsetof(BoneData, boneIDs));
+//
+//// weights
+//glEnableVertexAttribArray(BONE_WEIGHT_LOCATION);
+//glVertexAttribPointer(BONE_WEIGHT_LOCATION, 4, GL_FLOAT, GL_FALSE, sizeof(BoneData), (void*)offsetof(BoneData, weights));
+//
+//glBindVertexArray(0);
+//glBindBuffer(GL_ARRAY_BUFFER, 0);
+//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
