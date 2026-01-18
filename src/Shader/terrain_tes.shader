@@ -6,6 +6,9 @@ uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
 
+uniform mat4 lightSpaceMatrix;
+out vec4 FragPosLightSpace;
+
 in vec2 HeightMapCoordinates[];
 
 out float Height;
@@ -36,10 +39,11 @@ void main()
     vec4 p0 = (p01 - p00) * u + p00;
     vec4 p1 = (p11 - p10) * u + p10;
     vec4 p = (p1 - p0) * v + p0 + normal * Height;
-    //vec4 p = (p1 - p0) * v + p0;
-    //p += normal * Height;
 
-    //textPos = p;
+    // Shadow
+    vec4 worldPos = model * p;
+    FragPosLightSpace = lightSpaceMatrix * worldPos;
+
     TexCoord = uv;
-    gl_Position = projection * view * model * p;
+    gl_Position = projection * view * worldPos;
 }

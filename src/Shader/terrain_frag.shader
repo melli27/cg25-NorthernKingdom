@@ -4,6 +4,10 @@ in float Height;
 in vec4 textPos;
 in vec2 TexCoord;
 
+// Shadow
+in vec4 FragPosLightSpace;
+uniform sampler2D shadowMap;
+
 // Rock
 uniform sampler2D rockDiffuse;
 uniform sampler2D rockNormal;
@@ -21,6 +25,22 @@ uniform vec3 viewPos;
 
 
 out vec4 FragColor;
+
+float ShadowCalculation(vec4 fragPosLightSpace) {
+    vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
+    projCoords = projCoords * 0.5 + 0.5;
+    
+    if(projCoords.z > 1.0)
+        return 0.0;
+    
+    float closestDepth = texture(shadowMap, projCoords.xy).r;
+    float currentDepth = projCoords.z;
+    
+    float bias = 0.005;
+    float shadow = currentDepth - bias > closestDepth ? 1.0 : 0.0;
+    
+    return shadow;
+}
 
 void computeWeights(float height, out float wGrass, out float wRock, out float wSnow)
 {
@@ -55,5 +75,8 @@ void main()
 
     vec3 color = colGrass * wGrass + colRock * wRock + colSnow * wSnow;
 
-    FragColor = vec4(color, 1.0);
+    float shadow = ShadowCalculation(FragPosLightSpace);
+    vec3 finalColor = color * (1.0 - shadow * 0.3); // Darken color in shadow
+
+    FragColor = vec4(finalColor, 1.0);
 }

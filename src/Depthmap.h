@@ -19,6 +19,8 @@ public:
 	void CubemapRenderSetup();
 	void normalRenderSetup(int window_width, int window_height);
 
+	unsigned int getDepthMapTextureID() const { return depthMap; }
+
 private:
 	const unsigned int SHADOW_WIDTH = 2048;
 	const unsigned int SHADOW_HEIGHT = 2048;

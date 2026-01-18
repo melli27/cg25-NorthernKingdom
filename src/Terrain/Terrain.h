@@ -11,7 +11,8 @@ public:
 	int verticesCount;
 
 	Terrain(Shader& shader, const char* heightMapPath);
-	void Draw(Shader& shader);
+	float getHeightAt(float worldX, float worldZ) const;
+	void Draw(Shader& shader, unsigned int depthMapTexture, const glm::mat4& lightSpaceMatrix);
 	void deleteTerrain(); 
 
 private:

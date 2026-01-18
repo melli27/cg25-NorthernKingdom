@@ -101,8 +101,7 @@ void RenderManager::renderLightCube(Geometry* lightCube, Shader& shader, const g
 	lightCube->draw();
 }
 
-void RenderManager::renderTerrain(Terrain* terrain, Shader& shader, const glm::mat4& modelMatrix,
-	const glm::mat4& view, const glm::mat4& projection,
+void RenderManager::renderTerrain(Terrain* terrain, Shader& shader, const glm::mat4& modelMatrix, const glm::mat4& view, const glm::mat4& projection, unsigned int depthMap, glm::mat4 lightSpaceMatrix,
 	const TerrainRenderParams& params) {
 	if (!terrain) {
 		return;
@@ -124,6 +123,6 @@ void RenderManager::renderTerrain(Terrain* terrain, Shader& shader, const glm::m
 
 	// Render with special settings
 	glDisable(GL_CULL_FACE);
-	terrain->Draw(shader);
+	terrain->Draw(shader, depthMap, lightSpaceMatrix);
 	glEnable(GL_CULL_FACE);
 }

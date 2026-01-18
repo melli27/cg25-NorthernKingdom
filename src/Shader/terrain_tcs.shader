@@ -39,13 +39,6 @@ void main()
         float t10 = clamp((distance10 - minDistance) / (maxDistance - minDistance), 0.0, 1.0);
         float t11 = clamp((distance11 - minDistance) / (maxDistance - minDistance), 0.0, 1.0);
         
-        // Berechne Tessellation-Level für jede Kante
-        // Jede Kante nutzt die Eckpunkte die sie verbindet
-        //float tessLevel0 = mix(maxTessLevel, minTessLevel, min(t10, t00)); // linke Kante (v2-v0)
-        //float tessLevel1 = mix(maxTessLevel, minTessLevel, min(t00, t01)); // untere Kante (v0-v1)
-        //float tessLevel2 = mix(maxTessLevel, minTessLevel, min(t01, t11)); // rechte Kante (v1-v3)
-        //float tessLevel3 = mix(maxTessLevel, minTessLevel, min(t11, t10)); // obere Kante (v3-v2)
-        
         vec3 center = (worldPos00.xyz + worldPos01.xyz + worldPos10.xyz + worldPos11.xyz) * 0.25;
         float d = distance(center, cameraPos);
         float t = clamp((d - minDistance) / (maxDistance - minDistance), 0.0, 1.0);

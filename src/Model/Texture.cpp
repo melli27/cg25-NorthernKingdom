@@ -4,6 +4,13 @@ Texture::Texture()
 {
 }
 
+Texture::~Texture() {
+	if (imageData != nullptr) {
+		stbi_image_free(imageData);
+		imageData = nullptr;
+	}
+}
+
 void Texture::loadFromFile(const char* texturePath)
 {
 	path = texturePath;
@@ -39,12 +46,14 @@ void Texture::loadSTBI(const char* filepath) {
 
 		std::cout << "Loaded texture from: " << filepath << " size: " << height << "x" << width
 			<< " with " << nrChannels << " channels" << std::endl;
+
+		imageData = data;
 	}
 	else {
 		std::cout << "Failed to load texture: " << filepath << std::endl;
 	}
 
-	stbi_image_free(data);
+	//stbi_image_free(data);
 }
 
 
@@ -138,4 +147,18 @@ void Texture::bind(int location)
 {
 	glActiveTexture(GL_TEXTURE0 + location);
 	glBindTexture(GL_TEXTURE_2D, handle);
+}
+
+float Texture::getPixelValue(int x, int y) const
+{
+	if (!imageData || x < 0 || x >= width || y < 0 || y >= height) {
+		return 0.0f;
+	}
+
+	int index = (y * width + x) * nrChannels;
+
+	// For grayscale or RGB, use the red channel (or average for RGB)
+	float value = imageData[index] / 255.0f;
+
+	return value;
 }

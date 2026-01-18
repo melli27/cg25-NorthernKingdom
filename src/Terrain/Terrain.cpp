@@ -90,9 +90,28 @@ Terrain::Terrain(Shader& shader, const char* heightMapPath)
 
 	glPatchParameteri(GL_PATCH_VERTICES, NUM_PATCH_PTS);
 
-} 
+}
 
-void Terrain::Draw(Shader& shader)
+float Terrain::getHeightAt(float worldX, float worldZ) const {
+	// Convert world coordinates to heightmap UV coordinates
+	float u = (worldX + width / 2.0f) / width;
+	float v = (worldZ + height / 2.0f) / height;
+
+	// Clamp to valid range
+	u = glm::clamp(u, 0.0f, 1.0f);
+	v = glm::clamp(v, 0.0f, 1.0f);
+
+	int x = (int)(u * heightMapTexture.width);
+	int y = (int)(v * heightMapTexture.height);
+
+	// transformation from tessellation shader:
+	// Height = texture(heightMap, uv).r * 200.0 - 100.0
+	float heightValue = heightMapTexture.getPixelValue(x,y); // Get from heightmap data
+	return heightValue * 200.0f - 100.0f;
+}
+
+
+void Terrain::Draw(Shader& shader, unsigned int depthMapTexture, const glm::mat4& lightSpaceMatrix)
 {
 	shader.activate();
 
@@ -117,6 +136,10 @@ void Terrain::Draw(Shader& shader)
 	glActiveTexture(GL_TEXTURE6);
 	snowNormal.bind(6);
 	
+	glActiveTexture(GL_TEXTURE7);
+	glBindTexture(GL_TEXTURE_2D, depthMapTexture);
+	shader.setUniform("shadowMap", 7);
+	shader.setUniformMatrix4fv("lightSpaceMatrix", 1, GL_FALSE, lightSpaceMatrix);
 
 	glBindVertexArray(VAO);
 	glDrawArrays(GL_PATCHES, 0, NUM_PATCH_PTS * rez * rez);

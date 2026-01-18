@@ -14,6 +14,9 @@ struct TerrainRenderParams {
     float maxDistance;
     float minTessLevel;
     float maxTessLevel;
+	glm::mat4 lightSpaceMatrix;
+
+
 };
 
 class RenderManager {
@@ -34,7 +37,5 @@ public:
 
     void renderLightCube(Geometry* lightCube, Shader& shader, const glm::mat4& viewProj);
 
-    void renderTerrain(Terrain* terrain, Shader& shader, const glm::mat4& modelMatrix,
-        const glm::mat4& view, const glm::mat4& projection,
-        const TerrainRenderParams& params);
+    void renderTerrain(Terrain* terrain, Shader& shader, const glm::mat4& modelMatrix, const glm::mat4& view, const glm::mat4& projection, unsigned int depthMap, glm::mat4 lightSpaceMatrix, const TerrainRenderParams& params);
 };

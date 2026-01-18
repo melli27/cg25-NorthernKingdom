@@ -35,7 +35,6 @@ void Scene::init() {
 
 	// Terrain and animated model shaders
 	terrainShader.createTerrainShader();
-	animatedModelShader.createAnimatedModelShader();
 
 	// Skybox shader
 	skyboxShader.createSkyboxShader();
@@ -51,7 +50,7 @@ void Scene::init() {
 	lightCube = new Geometry(glm::translate(glm::mat4(1.0f), pointLight.position), Geometry::createCubeGeometry(0.2f, 0.2f, 0.2f));
 	//lightCube = new Geometry(glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f)), Geometry::createCubeGeometry(0.2f, 0.2f, 0.2f));
 
-	terrain = new Terrain(terrainShader, "assets/heightmap.png");
+	terrain = new Terrain(terrainShader, "assets/heightmap2.png");
 	backpack = new Model("assets/models/backpack/backpack.obj", false);
 	house = new Model("assets/models/city_house_2/city_house_2_bi.dae", true);
 	castleGuard = new Model("assets/models/castle_guard/castle_guard.dae", true);
@@ -60,14 +59,23 @@ void Scene::init() {
 	castleGuardAnimation = new Animation("assets/models/Reaction/Reaction.dae", castleGuard);
 	animator = new Animator(castleGuardAnimation);
 
+	// Get Terrain height
+	terrainModelMatrix = glm::mat4(1.0f);
+	float terrainHeight = terrain->getHeightAt(0.0f, 0.0f);
+	cout << "Terrain height at (0,0): " << terrainHeight << endl;
+
+	camera->position = glm::vec3(0.0f, terrainHeight + 5.0f, 10.0f);
+
 	// Setup Model Transforms
-	backpackModelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(-2.0f, -2.0f, -3.0f));
+	backpackModelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(-2.0f, terrainHeight + 2, -3.0f));
 	backpackModelMatrix = glm::scale(backpackModelMatrix, glm::vec3(0.3f));
-	houseMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(3.0f, -2.5f, -4.0f));
+
+	houseMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, terrainHeight, -0.0f));
 	houseMatrix = glm::rotate(houseMatrix, glm::radians(180.0f), vec3(0.0, 1.0, 1.0) );
+
 	castleGuardModelMatrix = glm::mat4(1.0f); //glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
 	//castleGuardModelMatrix = glm::scale(castleGuardModelMatrix, glm::vec3(0.5f));
-	terrainModelMatrix = glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 36.0f, 0.0f)), glm::vec3(0.5f));
+	//terrainModelMatrix = glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 36.0f, 0.0f)), glm::vec3(0.5f));
 
 	// Setup Depthmap
 	depthmap = new Depthmap();
@@ -80,6 +88,7 @@ void Scene::init() {
 
 void Scene::render(int window_width, int window_height, float deltaTime)
 {
+	vec3 cameraPos = camera->position;
 	glm::mat4 view = camera->getViewMatrix();
 	glm::mat4 projection = camera->getProjectionMatrix();
 	glm::mat4 viewProj = projection * view;
@@ -137,26 +146,23 @@ void Scene::render(int window_width, int window_height, float deltaTime)
 	depthmap->normalRenderSetup(window_width, window_height);
 	
 	// Render Models with lighting
-	renderManager->renderShadedModel(backpack, lightingShader, backpackModelMatrix, camera->position, viewProj, lightSpaceMatrix, false);
-	renderManager->renderShadedModel(house, lightingShader, houseMatrix, camera->position, viewProj, lightSpaceMatrix, false);
+	renderManager->renderShadedModel(backpack, lightingShader, backpackModelMatrix, cameraPos, viewProj, lightSpaceMatrix, false);
+	renderManager->renderShadedModel(house, lightingShader, houseMatrix, cameraPos, viewProj, lightSpaceMatrix, false);
 
 	renderManager->setAnimated(lightingShader, boneMatrices);
-	renderManager->renderShadedModel(castleGuard, lightingShader, castleGuardModelMatrix, camera->position, viewProj, lightSpaceMatrix, true);
+	renderManager->renderShadedModel(castleGuard, lightingShader, castleGuardModelMatrix, cameraPos, viewProj, lightSpaceMatrix, true);
 
 	// Render light cube
 	renderManager->renderLightCube(lightCube, lightSourceShader, viewProj);
 
 	// Render terrain
 	TerrainRenderParams terrainParams;
-	terrainParams.cameraPos = camera->position;
-	terrainParams.minDistance = 2.0f;
-	terrainParams.maxDistance = 30.0f;
-	terrainParams.minTessLevel = 2.0f;
-	terrainParams.maxTessLevel = 16.0f;
-	renderManager->renderTerrain(terrain, terrainShader, terrainModelMatrix, view, projection, terrainParams);
-
-	glDisable(GL_CULL_FACE);
-	terrain->Draw(terrainShader);
+	terrainParams.cameraPos = vec3(cameraPos.x, cameraPos.y - terrain->getHeightAt(cameraPos.x, cameraPos.y), cameraPos.z);
+	terrainParams.minTessLevel = 0.0f;
+	terrainParams.maxTessLevel = 64.0f;
+	terrainParams.minDistance = 3.0f;
+	terrainParams.maxDistance = 150.0f;
+	renderManager->renderTerrain(terrain, terrainShader, terrainModelMatrix, view, projection, depthmap->getDepthMapTextureID(), lightSpaceMatrix, terrainParams);
 
 	// Render skybox
 	skybox->draw(skyboxShader, view, projection);
