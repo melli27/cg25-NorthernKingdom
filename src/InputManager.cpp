@@ -1,6 +1,9 @@
 // InputManager.cpp
 #include "InputManager.h"
 
+bool InputManager::pointLightMode = true;
+bool InputManager::pointLightKeyPressed = false;
+
 InputManager::InputManager(Camera* camera) : camera(camera)
 {
 	glClearColor(1, 1, 1, 1);
@@ -52,6 +55,17 @@ void InputManager::processInput(GLFWwindow* window, float deltaTime)
 	{
 		polygonKeyPressed = false;
 	}
+
+	// light source toggles
+	if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS && !pointLightKeyPressed)
+	{
+		pointLightKeyPressed = true;
+		pointLightMode = !pointLightMode;
+	}
+	if (glfwGetKey(window, GLFW_KEY_1) == GLFW_RELEASE)
+	{
+		pointLightKeyPressed = false;
+	}
 }
 
 
@@ -92,4 +106,9 @@ void InputManager::scrollCallback(GLFWwindow* window, double xoffset, double yof
 	if (!input || !input->camera) return;
 
 	input->camera->zoom(static_cast<float>(yoffset));
+}
+
+bool InputManager::getPointLightMode()
+{
+	return pointLightMode;
 }

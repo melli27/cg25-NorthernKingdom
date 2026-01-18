@@ -40,6 +40,7 @@ uniform PointLight pointLight;
 uniform sampler2D shadowMap;
 uniform samplerCube pointShadowMap;
 uniform float farPlane;
+uniform int pointLightOn;
 
 vec3 sampleOffsetDirections[20] = vec3[]
 (
@@ -146,9 +147,13 @@ void main()
 {
     vec3 normal = normalize(Normal);
     vec3 viewDir = normalize(viewPos - FragPos);
-    vec3 color = calculateDirLight(normal, viewDir); // Blinn-Phong for directional light 
-    //color += calculatePointLight(normal, viewDir); // Blinn-Phong for point light
+    vec3 color = calculateDirLight(normal, viewDir); // Blinn-Phong for directional light
+
+    if (pointLightOn == 1)
+        color += calculatePointLight(normal, viewDir); // Blinn-Phong for point light
+
     //vec3 color = calculatePointLight(normal, viewDir);
+
     FragColor = vec4(color, 1.0);
     //FragColor = texture(material.diffuseTexture, TexCoords);
 }

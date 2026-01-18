@@ -1,5 +1,6 @@
 #include "RenderManager.h"
 #include <GL/glew.h>
+#include "InputManager.h"
 
 RenderManager::RenderManager() {
 }
@@ -52,6 +53,8 @@ void RenderManager::renderShadedModel(Model* model, Shader& shader, const glm::m
 	shader.setUniform("pointShadowMap", 4);
 	shader.setUniform("farPlane", 25.0f);//TODO get from lightmanager pointfarplane
 
+	shader.setUniform("pointLightOn", InputManager::getPointLightMode() ? 1 : 0);
+
 	model->draw(shader);
 	
 }
@@ -83,6 +86,7 @@ void RenderManager::renderAnimatedModel(Model* model, Shader& shader, const glm:
 		glm::mat4 mat = transformationMatrices[i];
 		shader.setUniformMatrix4fv("boneMatrices[" + std::to_string(i) + "]", 1, GL_FALSE, mat);
 	}
+
 	// Draw the model
 	model->draw(shader);
 }
@@ -97,6 +101,13 @@ void RenderManager::renderLightCube(Geometry* lightCube, Shader& shader, const g
 	shader.setUniform("viewProjMatrix", viewProj);
 	shader.setUniform("modelMatrix", lightCube->getModelMatrix());
 	shader.setUniform("normalMatrix", lightCube->getNormalMatrix());
+
+	if (InputManager::getPointLightMode()) {
+		shader.setUniform("lightColor", vec3(1.0f, 1.0f, 1.0f));
+	}
+	else {
+		shader.setUniform("lightColor", vec3(0.1f));
+	}
 
 	lightCube->draw();
 }
