@@ -14,6 +14,8 @@ public:
     static void scrollCallback(GLFWwindow* window, double xoffset, double yoffset);
     static void framebufferSizeCallback(GLFWwindow* window, int width, int height);
 
+	static bool getPointLightMode();
+
 private:
     Camera* camera;
 
@@ -23,6 +25,9 @@ private:
 
     bool polygonMode = false;
     bool polygonKeyPressed = false;
+
+	static bool pointLightMode;
+	static bool pointLightKeyPressed;
 
     int window_width = 800;
     int window_height = 800;
