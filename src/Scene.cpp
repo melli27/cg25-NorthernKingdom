@@ -9,7 +9,8 @@ Scene::Scene(Camera* cam)
 	lightManager(new LightManager()),
 	terrain(nullptr),
 	backpack(nullptr),
-	lightCube(nullptr)
+	lightCube(nullptr),
+	skybox(nullptr)
 {
 }
 
@@ -19,6 +20,7 @@ Scene::~Scene() {
 	delete terrain;
 	delete backpack;
 	delete lightCube;
+	delete skybox;
 }
 
 void Scene::init() {
@@ -34,6 +36,9 @@ void Scene::init() {
 	// Terrain and animated model shaders
 	terrainShader.createTerrainShader();
 	animatedModelShader.createAnimatedModelShader();
+
+	// Skybox shader
+	skyboxShader.createSkyboxShader();
 
 	// Setup Lights
 	lightManager->addDirectionalLight(dirLight);
@@ -68,6 +73,9 @@ void Scene::init() {
 	depthmap = new Depthmap();
 	depthmap->initDepthmap();
 
+	// Setup Skybox
+	skybox = new Skybox();
+	skybox->init("assets/textures/sky");
 }
 
 void Scene::render(int window_width, int window_height, float deltaTime)
@@ -79,6 +87,7 @@ void Scene::render(int window_width, int window_height, float deltaTime)
 	// 1. pass: render to depth map
 	// ----------------------------
 	depthmap->renderToDepthmap();
+	depthShader.activate();
 	depthShader.setUniformMatrix4fv("lightSpaceMatrix", 1, GL_FALSE, lightSpaceMatrix);
 
 	// Backpack depth
@@ -96,6 +105,7 @@ void Scene::render(int window_width, int window_height, float deltaTime)
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	depthmap->renderToDepthCubemap();
 
+	pointDepthShader.activate();
 	pointDepthShader.setUniform("lightPos", pointLight.position);
 	pointDepthShader.setUniform("farPlane", 25.0f); //TODO get from lightmanager pointfarplane
 	for (unsigned int i = 0; i < 6; ++i)
@@ -140,4 +150,7 @@ void Scene::render(int window_width, int window_height, float deltaTime)
 
 	glDisable(GL_CULL_FACE);
 	terrain->Draw(terrainShader);
+
+	// Render skybox
+	skybox->draw(skyboxShader, view, projection);
 }

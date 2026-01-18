@@ -22,6 +22,7 @@ public:
 	void createLightSourceShader();
     void createDepthShader();
     void createPointDepthShader();
+	void createSkyboxShader();
 
     void createTerrainShader();
     void createAnimatedModelShader();

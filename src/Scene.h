@@ -8,6 +8,7 @@
 #include "Lights/LightManager.h"
 #include "RenderManager.h"
 #include <Depthmap.h>
+#include <Skybox/Skybox.h>
 #include <Animator.h>
 
 class Scene {
@@ -29,6 +30,7 @@ private:
     Shader lightingShader;
     Shader depthShader;
 	Shader pointDepthShader;
+	Shader skyboxShader;
 
     Shader terrainShader;
     Shader animatedModelShader;
@@ -42,6 +44,7 @@ private:
 	Model* castleGuard;
     Geometry* lightCube;
     Geometry* testCube;
+	Skybox* skybox;
 
 	Animation* castleGuardAnimation;
     Animator* animator;

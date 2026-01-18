@@ -151,6 +151,23 @@ void Shader::createAnimatedModelShader()
 	glDeleteShader(fragmentShader);
 }
 
+void Shader::createSkyboxShader()
+{
+	shader = glCreateProgram();
+	GLuint vertexShader = compileShader(GL_VERTEX_SHADER, "src/Shader/skybox_vert.shader");
+	GLuint fragmentShader = compileShader(GL_FRAGMENT_SHADER, "src/Shader/skybox_frag.shader");
+
+	glAttachShader(shader, vertexShader);
+	glAttachShader(shader, fragmentShader);
+	glLinkProgram(shader);
+	glValidateProgram(shader);
+
+	ID = shader;
+
+	glDeleteShader(vertexShader);
+	glDeleteShader(fragmentShader);
+}
+
 void Shader::activate() {
 	glUseProgram(shader);
 }
