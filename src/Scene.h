@@ -50,6 +50,7 @@ private:
 
     Terrain* terrain;
     Model* backpack;
+    Model* bench;
     Model* house;
     Model* tower;
 	Model* castleGuard;
@@ -67,6 +68,7 @@ private:
     glm::mat4 backpackModelMatrix;
 	glm::mat4 castleGuardModelMatrix;
 	glm::mat4 girlMatrix;
+	glm::mat4 benchMatrix;
     glm::mat4 terrainModelMatrix;
     glm::mat4 houseMatrix;
     glm::mat4 houseMatrix2;
@@ -82,7 +84,7 @@ private:
     };
 
     PointLight pointLight{
-        glm::vec3(-3.0f, -1.0f, -3.0f), // position
+        glm::vec3(12.0f, -81.3137, 10.0f), // position
         glm::vec3(1.0f, 1.0f, 1.0f),    // diffuse
         glm::vec3(0.2f, 0.2f, 0.2f),    // ambient
         glm::vec3(0.5f, 0.5f, 0.5f),    // specular
