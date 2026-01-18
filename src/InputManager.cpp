@@ -14,6 +14,10 @@ InputManager::InputManager(Camera* camera) : camera(camera)
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		glDisable(GL_CULL_FACE);
 	}
+
+	if (camera && camera->readRecordedCameraPath("recordedCameraPath.txt")) {
+		camera->startPlayback(glfwGetTime());
+	}
 }
 
 void InputManager::processInput(GLFWwindow* window, float deltaTime)
@@ -69,8 +73,55 @@ void InputManager::processInput(GLFWwindow* window, float deltaTime)
 	{
 		pointLightKeyPressed = false;
 	}
-}
 
+	// Camera path recording toggle
+	if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS && !recordPathKeyPressed)
+	{
+		recordPathKeyPressed = true;
+		toggleCameraRecording();
+	}
+	if (glfwGetKey(window, GLFW_KEY_P) == GLFW_RELEASE)
+	{
+		recordPathKeyPressed = false;
+	}
+
+	if (recordPathMode)
+	{
+		recordAccumulator += deltaTime;
+		while (recordAccumulator >= recordInterval)
+		{
+			recordAccumulator -= recordInterval;
+			recordCameraPose(glfwGetTime());
+		}
+	}
+
+	// toggle automatic camera
+	static bool autoCameraKeyPressed = false;
+	if (glfwGetKey(window, GLFW_KEY_F1) == GLFW_PRESS && !autoCameraKeyPressed)
+	{
+		autoCameraKeyPressed = true;
+		if (camera->getPlaybackMode())
+		{
+			camera->stopPlayback();
+		}
+		else
+			camera->startPlayback(glfwGetTime());
+	}
+	if (glfwGetKey(window, GLFW_KEY_F1) == GLFW_RELEASE)
+	{
+		autoCameraKeyPressed = false;
+	}
+
+	if (camera->getPlaybackMode())
+	{
+		bool playing = camera->updatePlayback(glfwGetTime());
+		if (!playing)
+		{
+			camera->stopPlayback();
+		}
+		return;
+	}
+}
 
 
 InputManager* InputManager::getInputManager(GLFWwindow* window)
@@ -114,4 +165,39 @@ void InputManager::scrollCallback(GLFWwindow* window, double xoffset, double yof
 bool InputManager::getPointLightMode()
 {
 	return pointLightMode;
+}
+
+void InputManager::toggleCameraRecording()
+{
+	recordPathMode = !recordPathMode;
+	if (recordPathMode)
+	{
+		recordPathFile.open("recordedCameraPath.txt", std::ios::out | std::ios::trunc);
+		recordAccumulator = 0.0f;
+		std::cout << "Camera path recording started." << std::endl;
+	}
+	else
+	{
+		if (recordPathFile.is_open())
+		{
+			recordPathFile.close();
+		}
+		std::cout << "Camera path recording stopped." << std::endl;
+	}
+}
+
+void InputManager::recordCameraPose(float timeSeconds)
+{
+	if (!camera || !recordPathFile.is_open())
+		return;
+
+	const glm::vec3& pos = camera->position;
+	const float yaw = camera->yaw;
+	const float pitch = camera->pitch;
+	const float fovDeg = glm::degrees(camera->fov);
+
+	recordPathFile << timeSeconds << " "
+		<< pos.x << " " << pos.y << " " << pos.z << " "
+		<< yaw << " " << pitch << " "
+		<< fovDeg << "\n";
 }
