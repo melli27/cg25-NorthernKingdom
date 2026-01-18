@@ -8,6 +8,7 @@
 #include "Lights/LightManager.h"
 #include "RenderManager.h"
 #include <Depthmap.h>
+#include <Skybox/Skybox.h>
 
 class Scene {
 public:
@@ -28,6 +29,7 @@ private:
     Shader lightingShader;
     Shader depthShader;
 	Shader pointDepthShader;
+	Shader skyboxShader;
 
     Shader terrainShader;
     Shader animatedModelShader;
@@ -41,6 +43,7 @@ private:
 	Model* castleGuard;
     Geometry* lightCube;
     Geometry* testCube;
+	Skybox* skybox;
 
     glm::mat4 backpackModelMatrix;
 	glm::mat4 castleGuardModelMatrix;
