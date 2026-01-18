@@ -75,11 +75,13 @@ void Scene::init() {
 	backpackModelMatrix = glm::scale(backpackModelMatrix, glm::vec3(0.3f));
 	houseMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(11.0f, terrainHeight, 25.0f));
 	houseMatrix = glm::rotate(houseMatrix, glm::radians(180.0f), vec3(0.0, 1.0, 1.0));
-	houseMatrix2 = glm::translate(houseMatrix, glm::vec3(-4.0, 0.0, 5.0));
-	houseMatrix3 = glm::translate(houseMatrix, glm::vec3(-8.0, 0.0, 7.0));
-	towerMatrix = glm::rotate(glm::translate(glm::mat4(1.0f), glm::vec3(-11.0f, terrainHeight, 34.0f)), glm::radians(90.0f), vec3(1.0, 0.0, 0.0));
-	castleGuardModelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, terrainHeight, 15.0f));; //glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
-	girlMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(-1.0f, terrainHeight, 13.0f));; //glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
+	houseMatrix2 = glm::translate(glm::mat4(1.0f), glm::vec3(-4.0, terrainHeight + 2, 5.0));
+	houseMatrix2 = glm::rotate(houseMatrix, glm::radians(180.0f), vec3(0.0, 1.0, 1.0));
+	houseMatrix3 = glm::translate(glm::mat4(1.0f), glm::vec3(-8.0, terrainHeight + 2, 7.0));
+	houseMatrix3 = glm::rotate(houseMatrix, glm::radians(180.0f), vec3(0.0, 1.0, 1.0));
+	towerMatrix = glm::rotate(glm::translate(glm::mat4(1.0f), glm::vec3(-11.0f, terrainHeight, 34.0f)), glm::radians(90.0f), vec3(0.0, 0.0, 0.0));
+	castleGuardModelMatrix = glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, terrainHeight, 15.0f)), glm::vec3(3.0f)); //glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
+	girlMatrix = glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(-1.0f, terrainHeight, 13.0f)), glm::vec3(3.0f)); //glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
 
 	// Setup Depthmap
 	depthmap = new Depthmap();
