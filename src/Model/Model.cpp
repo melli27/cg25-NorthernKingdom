@@ -257,7 +257,7 @@ void Model::loadMaterialTextures(aiMesh* mesh, std::vector<std::shared_ptr<Textu
 		cout << "No diffuse texture found for mesh. Using default texture" << endl;
 
 		shared_ptr<Texture> tex = make_shared<Texture>();
-		tex->loadFromFile("src/diffuse.jpg");
+		tex->loadFromFile("assets/models/Medieval tower/Medieval tower_mid_Col.jpg");
 		tex->type = "diffuseTexture";
 
 		meshTextures.push_back(tex);

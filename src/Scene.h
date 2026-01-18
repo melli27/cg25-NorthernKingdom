@@ -11,6 +11,12 @@
 #include <Skybox/Skybox.h>
 #include <Animator.h>
 
+struct RenderObject {
+    Model* model;
+    glm::mat4 modelMatrix;
+    Shader shader;
+};
+
 class Scene {
 public:
     Scene(Camera* camera);
@@ -40,13 +46,14 @@ private:
 	vector<mat4> shadowTransforms;
 	Depthmap* depthmap;
 
-	map<Model*, mat4> modelMatrixMap;
-	vector<Model*> models;
+    vector<RenderObject> renderObjects;
 
     Terrain* terrain;
     Model* backpack;
     Model* house;
+    Model* tower;
 	Model* castleGuard;
+    Model* girl;
     Geometry* lightCube;
     Geometry* testCube;
 	Skybox* skybox;
@@ -54,10 +61,17 @@ private:
 	Animation* castleGuardAnimation;
     Animator* animator;
 
+	Animation* catwalk;
+    Animator* animator2;
+
     glm::mat4 backpackModelMatrix;
 	glm::mat4 castleGuardModelMatrix;
+	glm::mat4 girlMatrix;
     glm::mat4 terrainModelMatrix;
     glm::mat4 houseMatrix;
+    glm::mat4 houseMatrix2;
+    glm::mat4 houseMatrix3;
+    glm::mat4 towerMatrix;
 
     DirectionalLight dirLight{
         glm::vec3(-0.4f, -0.6f, -0.2f),  // direction

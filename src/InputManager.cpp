@@ -33,6 +33,9 @@ void InputManager::processInput(GLFWwindow* window, float deltaTime)
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
 		camera->move(RIGHT, deltaTime);
 
+	if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS)
+		std::cout << camera->position.x << " " << camera->position.z << std::endl;
+
 	// Space toggle Wireframe
 	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS && !polygonKeyPressed)
 	{

@@ -53,15 +53,19 @@ void Scene::init() {
 	terrain = new Terrain(terrainShader, "assets/heightmap2.png");
 	backpack = new Model("assets/models/backpack/backpack.obj", false);
 	house = new Model("assets/models/city_house_2/city_house_2_bi.dae", true);
+	tower = new Model("assets/models/Medieval tower/Medieval tower_High/Medieval tower_High.dae", true);
 	castleGuard = new Model("assets/models/castle_guard/castle_guard.dae", true);
-
+	girl = new Model("assets/models/Peasant Girl/Peasant Girl.dae", true);
+	
 	// Load Animations
 	castleGuardAnimation = new Animation("assets/models/Reaction/Reaction.dae", castleGuard);
 	animator = new Animator(castleGuardAnimation);
+	catwalk = new Animation("assets/models/Catwalk Walk Turn 180 Tight.dae", girl);
+	animator2 = new Animator(catwalk);
 
 	// Get Terrain height
 	terrainModelMatrix = glm::mat4(1.0f);
-	float terrainHeight = terrain->getHeightAt(0.0f, 0.0f);
+	float terrainHeight = terrain->getHeightAt(-3.0f, 20.0f);
 	cout << "Terrain height at (0,0): " << terrainHeight << endl;
 
 	camera->position = glm::vec3(0.0f, terrainHeight + 5.0f, 10.0f);
@@ -69,13 +73,13 @@ void Scene::init() {
 	// Setup Model Transforms
 	backpackModelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(-2.0f, terrainHeight + 2, -3.0f));
 	backpackModelMatrix = glm::scale(backpackModelMatrix, glm::vec3(0.3f));
-
-	houseMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, terrainHeight, -0.0f));
-	houseMatrix = glm::rotate(houseMatrix, glm::radians(180.0f), vec3(0.0, 1.0, 1.0) );
-
-	castleGuardModelMatrix = glm::mat4(1.0f); //glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
-	//castleGuardModelMatrix = glm::scale(castleGuardModelMatrix, glm::vec3(0.5f));
-	//terrainModelMatrix = glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 36.0f, 0.0f)), glm::vec3(0.5f));
+	houseMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(11.0f, terrainHeight, 25.0f));
+	houseMatrix = glm::rotate(houseMatrix, glm::radians(180.0f), vec3(0.0, 1.0, 1.0));
+	houseMatrix2 = glm::translate(houseMatrix, glm::vec3(-4.0, 0.0, 5.0));
+	houseMatrix3 = glm::translate(houseMatrix, glm::vec3(-8.0, 0.0, 7.0));
+	towerMatrix = glm::rotate(glm::translate(glm::mat4(1.0f), glm::vec3(-11.0f, terrainHeight, 34.0f)), glm::radians(90.0f), vec3(1.0, 0.0, 0.0));
+	castleGuardModelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, terrainHeight, 15.0f));; //glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
+	girlMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(-1.0f, terrainHeight, 13.0f));; //glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
 
 	// Setup Depthmap
 	depthmap = new Depthmap();
@@ -96,6 +100,8 @@ void Scene::render(int window_width, int window_height, float deltaTime)
 	// Update animation
 	animator->UpdateAnimation(deltaTime);
 	auto boneMatrices = animator->GetFinalBoneMatrices();
+	animator2->UpdateAnimation(deltaTime);
+	auto boneMatrices2 = animator2->GetFinalBoneMatrices();
 
 	// 1. pass: render to depth map
 	// ----------------------------
@@ -112,11 +118,25 @@ void Scene::render(int window_width, int window_height, float deltaTime)
 	depthShader.setUniformMatrix4fv("modelMatrix", 1, GL_FALSE, houseMatrix);
 	depthShader.setUniform("isAnimated", false);
 	house->draw(depthShader);
+	depthShader.setUniformMatrix4fv("modelMatrix", 1, GL_FALSE, houseMatrix2);
+	house->draw(depthShader);
+	depthShader.setUniformMatrix4fv("modelMatrix", 1, GL_FALSE, houseMatrix3);
+	house->draw(depthShader);
+
+	// Tower depth
+	depthShader.setUniformMatrix4fv("modelMatrix", 1, GL_FALSE, towerMatrix);
+	depthShader.setUniform("isAnimated", false);
+	tower->draw(depthShader);
 
 	// Guard depth
 	renderManager->setAnimated(depthShader, boneMatrices);
 	depthShader.setUniformMatrix4fv("modelMatrix", 1, GL_FALSE, castleGuardModelMatrix);
 	castleGuard->draw(depthShader);
+
+	// Girl depth
+	renderManager->setAnimated(depthShader, boneMatrices2);
+	depthShader.setUniformMatrix4fv("modelMatrix", 1, GL_FALSE, girlMatrix);
+	girl->draw(depthShader);
 
 	// 1. pass: render to depth cubemap
 	// --------------------------------
@@ -135,10 +155,23 @@ void Scene::render(int window_width, int window_height, float deltaTime)
 	// House depth
 	pointDepthShader.setUniformMatrix4fv("modelMatrix", 1, GL_FALSE, houseMatrix);
 	house->draw(pointDepthShader);
+	pointDepthShader.setUniformMatrix4fv("modelMatrix", 1, GL_FALSE, houseMatrix2);
+	house->draw(pointDepthShader);
+	pointDepthShader.setUniformMatrix4fv("modelMatrix", 1, GL_FALSE, houseMatrix3);
+	house->draw(pointDepthShader);
+
+	// Tower depth
+	pointDepthShader.setUniformMatrix4fv("modelMatrix", 1, GL_FALSE, towerMatrix);
+	tower->draw(pointDepthShader);
 
 	// Guard depth
 	renderManager->setAnimated(depthShader, boneMatrices);
 	pointDepthShader.setUniformMatrix4fv("modelMatrix", 1, GL_FALSE, castleGuardModelMatrix);
+	castleGuard->draw(pointDepthShader);
+
+	// Girl depth
+	renderManager->setAnimated(depthShader, boneMatrices2);
+	pointDepthShader.setUniformMatrix4fv("modelMatrix", 1, GL_FALSE, girlMatrix);
 	castleGuard->draw(pointDepthShader);
 
 	// 2. pass: render scene normally with shadow mapping
@@ -148,9 +181,14 @@ void Scene::render(int window_width, int window_height, float deltaTime)
 	// Render Models with lighting
 	renderManager->renderShadedModel(backpack, lightingShader, backpackModelMatrix, cameraPos, viewProj, lightSpaceMatrix, false);
 	renderManager->renderShadedModel(house, lightingShader, houseMatrix, cameraPos, viewProj, lightSpaceMatrix, false);
+	renderManager->renderShadedModel(house, lightingShader, houseMatrix2, cameraPos, viewProj, lightSpaceMatrix, false);
+	renderManager->renderShadedModel(house, lightingShader, houseMatrix3, cameraPos, viewProj, lightSpaceMatrix, false);
+	renderManager->renderShadedModel(tower, lightingShader, towerMatrix, cameraPos, viewProj, lightSpaceMatrix, false);
 
 	renderManager->setAnimated(lightingShader, boneMatrices);
 	renderManager->renderShadedModel(castleGuard, lightingShader, castleGuardModelMatrix, cameraPos, viewProj, lightSpaceMatrix, true);
+	renderManager->setAnimated(lightingShader, boneMatrices2);
+	renderManager->renderShadedModel(girl, lightingShader, girlMatrix, cameraPos, viewProj, lightSpaceMatrix, true);
 
 	// Render light cube
 	renderManager->renderLightCube(lightCube, lightSourceShader, viewProj);
@@ -158,10 +196,10 @@ void Scene::render(int window_width, int window_height, float deltaTime)
 	// Render terrain
 	TerrainRenderParams terrainParams;
 	terrainParams.cameraPos = vec3(cameraPos.x, cameraPos.y - terrain->getHeightAt(cameraPos.x, cameraPos.y), cameraPos.z);
-	terrainParams.minTessLevel = 0.0f;
-	terrainParams.maxTessLevel = 64.0f;
+	terrainParams.minTessLevel = 3.0f;
+	terrainParams.maxTessLevel = 60.0f;
 	terrainParams.minDistance = 3.0f;
-	terrainParams.maxDistance = 150.0f;
+	terrainParams.maxDistance = 200.0f;
 	renderManager->renderTerrain(terrain, terrainShader, terrainModelMatrix, view, projection, depthmap->getDepthMapTextureID(), lightSpaceMatrix, terrainParams);
 
 	// Render skybox
