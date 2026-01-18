@@ -8,7 +8,19 @@ RenderManager::~RenderManager() {
 }
 
 
-void RenderManager::renderModel(Model* model, Shader& shader, const glm::mat4& modelMatrix, vec3 cameraPosition, const mat4& viewProj) 
+//void RenderManager::renderDepthmap(Depthmap* depthmap, Shader& shader, mat4 lightSpaceMatrix, map<Model*, mat4> modelMatrixMap)
+//{
+//	depthmap->DephtmapRenderSetup();
+//	shader.activate();
+//	shader.setUniformMatrix4fv("lightSpaceMatrix", 1, GL_FALSE, lightSpaceMatrix);
+//
+//	for (const auto& [model, modelMatrix] : modelMatrixMap) {
+//		shader.setUniformMatrix4fv("modelMatrix", 1, GL_FALSE, modelMatrix);
+//		model->draw(shader);
+//	}
+//}
+
+void RenderManager::renderModel(Model* model, Shader& shader, const glm::mat4& modelMatrix, vec3 cameraPosition, const mat4& viewProj)
 {
 	if (!model) {
 		return;
@@ -44,7 +56,7 @@ void RenderManager::renderShadedModel(Model* model, Shader& shader, const glm::m
 	
 }
 
-void RenderManager::setAnimated(Model* model, Shader& shader, vector<mat4>& transformationMatrices)
+void RenderManager::setAnimated(Shader& shader, vector<mat4>& transformationMatrices)
 {
 	shader.activate();
 

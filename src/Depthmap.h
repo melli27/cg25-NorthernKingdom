@@ -15,8 +15,8 @@ public:
 	void initDepthmap();
 
     // Render different object types
-    void renderToDepthmap();
-	void renderToDepthCubemap();
+    void DephtmapRenderSetup();
+	void CubemapRenderSetup();
 	void normalRenderSetup(int window_width, int window_height);
 
 private:

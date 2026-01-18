@@ -40,6 +40,9 @@ private:
 	vector<mat4> shadowTransforms;
 	Depthmap* depthmap;
 
+	map<Model*, mat4> modelMatrixMap;
+	vector<Model*> models;
+
     Terrain* terrain;
     Model* backpack;
     Model* house;

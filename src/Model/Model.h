@@ -25,9 +25,6 @@ public:
 	Model(string const& path, bool flipUVs);
 	void draw(Shader& shader);
 
-	//map<string, BoneInfo> getBoneInfoMap() const { return boneInfoMap; }
-	vector<mat4> getBoneTransforms(float timeInSeconds, mat4 globalTransform);
-
 	const aiScene* getScene() const { return scene; }
 	map<string, BoneInfo>& getBoneInfoMap() { return boneInfoMap; }
 	unsigned int& getBoneCount() { return boneCounter; }
