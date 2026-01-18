@@ -28,6 +28,7 @@ private:
 
     Shader lightSourceShader;
     Shader lightingShader;
+    Shader lightingShader2;
     Shader depthShader;
 	Shader pointDepthShader;
 	Shader skyboxShader;
@@ -41,6 +42,7 @@ private:
 
     Terrain* terrain;
     Model* backpack;
+    Model* house;
 	Model* castleGuard;
     Geometry* lightCube;
     Geometry* testCube;
@@ -52,6 +54,7 @@ private:
     glm::mat4 backpackModelMatrix;
 	glm::mat4 castleGuardModelMatrix;
     glm::mat4 terrainModelMatrix;
+    glm::mat4 houseMatrix;
 
     DirectionalLight dirLight{
         glm::vec3(-0.4f, -0.6f, -0.2f),  // direction

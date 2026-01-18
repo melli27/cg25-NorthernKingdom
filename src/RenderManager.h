@@ -23,7 +23,9 @@ public:
     // Render different object types
     void renderModel(Model* model, Shader& shader, const glm::mat4& modelMatrix, vec3 cameraPostion, const glm::mat4& viewProj);
 
-    void renderShadedModel(Model* model, Shader& shader, const glm::mat4& modelMatrix, vec3 cameraPosition, const glm::mat4& viewProj, const mat4& lightspaceMatrix);
+    void renderShadedModel(Model* model, Shader& shader, const glm::mat4& modelMatrix, vec3 cameraPosition, const glm::mat4& viewProj, const mat4& lightspaceMatrix, bool isAnimated);
+    
+	void setAnimated(Model* model, Shader& shader, std::vector<glm::mat4>& transformationMatrices);
 
     void renderAnimatedModel(Model* model, Shader& shader, const glm::mat4& modelMatrix, vec3 cameraPosition, const glm::mat4& viewProj, vector<mat4>& transformationMatrices);
 

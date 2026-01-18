@@ -55,9 +55,8 @@ void Scene::init() {
 
 	terrain = new Terrain(terrainShader, "assets/heightmap.png");
 	backpack = new Model("assets/models/backpack/backpack.obj", false);
-	//castleGuard = new Model("assets/models/Reaction/reaction.dae", true);
+	house = new Model("assets/models/city_house_2/city_house_2_bi.dae", true);
 	castleGuard = new Model("assets/models/castle_guard/castle_guard.dae", true);
-	
 	// Load Animations
 	castleGuardAnimation = new Animation("assets/models/Reaction/Reaction.dae", castleGuard);
 	animator = new Animator(castleGuardAnimation);
@@ -65,6 +64,8 @@ void Scene::init() {
 	// Setup Model Transforms
 	backpackModelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(-2.0f, -2.0f, -3.0f));
 	backpackModelMatrix = glm::scale(backpackModelMatrix, glm::vec3(0.3f));
+	houseMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(3.0f, -2.5f, -4.0f));
+	houseMatrix = glm::rotate(houseMatrix, glm::radians(180.0f), vec3(0.0, 1.0, 1.0) );
 	castleGuardModelMatrix = glm::mat4(1.0f); //glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
 	//castleGuardModelMatrix = glm::scale(castleGuardModelMatrix, glm::vec3(0.5f));
 	terrainModelMatrix = glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 36.0f, 0.0f)), glm::vec3(0.5f));
@@ -84,6 +85,9 @@ void Scene::render(int window_width, int window_height, float deltaTime)
 	glm::mat4 projection = camera->getProjectionMatrix();
 	glm::mat4 viewProj = projection * view;
 
+	animator->UpdateAnimation(deltaTime);
+	auto transforms = animator->GetFinalBoneMatrices();
+
 	// 1. pass: render to depth map
 	// ----------------------------
 	depthmap->renderToDepthmap();
@@ -93,6 +97,14 @@ void Scene::render(int window_width, int window_height, float deltaTime)
 	// Backpack depth
 	depthShader.setUniformMatrix4fv("modelMatrix", 1, GL_FALSE, backpackModelMatrix);
 	backpack->draw(depthShader);
+
+	// Guard depth
+	depthShader.setUniformMatrix4fv("modelMatrix", 1, GL_FALSE, castleGuardModelMatrix);
+	castleGuard->draw(depthShader);
+
+	// House depth
+	depthShader.setUniformMatrix4fv("modelMatrix", 1, GL_FALSE, houseMatrix);
+	house->draw(depthShader);
 
 	// Testcube draw
 	depthShader.setUniformMatrix4fv("modelMatrix", 1, GL_FALSE, testCube->getModelMatrix());
@@ -115,6 +127,14 @@ void Scene::render(int window_width, int window_height, float deltaTime)
 	pointDepthShader.setUniformMatrix4fv("modelMatrix", 1, GL_FALSE, backpackModelMatrix);
 	backpack->draw(pointDepthShader);
 
+	// Guard depth
+	depthShader.setUniformMatrix4fv("modelMatrix", 1, GL_FALSE, castleGuardModelMatrix);
+	castleGuard->draw(pointDepthShader);
+
+	// House depth
+	pointDepthShader.setUniformMatrix4fv("modelMatrix", 1, GL_FALSE, houseMatrix);
+	house->draw(pointDepthShader);
+
 	// Test cube draw
 	pointDepthShader.setUniform("modelMatrix", testCube->getModelMatrix());
 	testCube->draw();
@@ -129,12 +149,14 @@ void Scene::render(int window_width, int window_height, float deltaTime)
 	depthmap->normalRenderSetup(window_width, window_height);
 
 	// Render castle guard with animation
-	animator->UpdateAnimation(deltaTime);
-	auto transforms = animator->GetFinalBoneMatrices();
-	renderManager->renderAnimatedModel(castleGuard, animatedModelShader, castleGuardModelMatrix, camera->position, viewProj, transforms);
-
+	//renderManager->renderAnimatedModel(castleGuard, lightingShader, castleGuardModelMatrix, camera->position, viewProj, lightSpaceMatrix, transforms);
+	
 	// Render backpack with lighting
-	renderManager->renderShadedModel(backpack, lightingShader, backpackModelMatrix, camera->position, viewProj, lightSpaceMatrix);
+	renderManager->renderShadedModel(backpack, lightingShader, backpackModelMatrix, camera->position, viewProj, lightSpaceMatrix, false);
+	renderManager->renderShadedModel(house, lightingShader, houseMatrix, camera->position, viewProj, lightSpaceMatrix, false);
+
+	renderManager->setAnimated(castleGuard, lightingShader, transforms);
+	renderManager->renderShadedModel(castleGuard, lightingShader, castleGuardModelMatrix, camera->position, viewProj, lightSpaceMatrix, true);
 
 	// Render light cube
 	renderManager->renderLightCube(lightCube, lightSourceShader, viewProj);
