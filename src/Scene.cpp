@@ -84,6 +84,10 @@ void Scene::render(int window_width, int window_height, float deltaTime)
 	glm::mat4 projection = camera->getProjectionMatrix();
 	glm::mat4 viewProj = projection * view;
 
+	// Update animation
+	animator->UpdateAnimation(deltaTime);
+	auto boneMatrices = animator->GetFinalBoneMatrices();
+
 	// 1. pass: render to depth map
 	// ----------------------------
 	depthmap->DephtmapRenderSetup();
@@ -92,18 +96,18 @@ void Scene::render(int window_width, int window_height, float deltaTime)
 
 	// Backpack depth
 	depthShader.setUniformMatrix4fv("modelMatrix", 1, GL_FALSE, backpackModelMatrix);
+	depthShader.setUniform("isAnimated", false);
 	backpack->draw(depthShader);
-
-	// Guard depth
-	animator->UpdateAnimation(deltaTime);
-	auto transforms = animator->GetFinalBoneMatrices();
-	//depthmap->setAnimated();
-	//depthShader.setUniformMatrix4fv("modelMatrix", 1, GL_FALSE, castleGuardModelMatrix);
-	//castleGuard->draw(depthShader);
 
 	// House depth
 	depthShader.setUniformMatrix4fv("modelMatrix", 1, GL_FALSE, houseMatrix);
+	depthShader.setUniform("isAnimated", false);
 	house->draw(depthShader);
+
+	// Guard depth
+	renderManager->setAnimated(depthShader, boneMatrices);
+	depthShader.setUniformMatrix4fv("modelMatrix", 1, GL_FALSE, castleGuardModelMatrix);
+	castleGuard->draw(depthShader);
 
 	// 1. pass: render to depth cubemap
 	// --------------------------------
@@ -119,13 +123,14 @@ void Scene::render(int window_width, int window_height, float deltaTime)
 	pointDepthShader.setUniformMatrix4fv("modelMatrix", 1, GL_FALSE, backpackModelMatrix);
 	backpack->draw(pointDepthShader);
 
-	// Guard depth
-	//depthShader.setUniformMatrix4fv("modelMatrix", 1, GL_FALSE, castleGuardModelMatrix);
-	//castleGuard->draw(pointDepthShader);
-
 	// House depth
 	pointDepthShader.setUniformMatrix4fv("modelMatrix", 1, GL_FALSE, houseMatrix);
 	house->draw(pointDepthShader);
+
+	// Guard depth
+	renderManager->setAnimated(depthShader, boneMatrices);
+	pointDepthShader.setUniformMatrix4fv("modelMatrix", 1, GL_FALSE, castleGuardModelMatrix);
+	castleGuard->draw(pointDepthShader);
 
 	// 2. pass: render scene normally with shadow mapping
 	// --------------------------------------------------
@@ -135,7 +140,7 @@ void Scene::render(int window_width, int window_height, float deltaTime)
 	renderManager->renderShadedModel(backpack, lightingShader, backpackModelMatrix, camera->position, viewProj, lightSpaceMatrix, false);
 	renderManager->renderShadedModel(house, lightingShader, houseMatrix, camera->position, viewProj, lightSpaceMatrix, false);
 
-	renderManager->setAnimated(lightingShader, transforms);
+	renderManager->setAnimated(lightingShader, boneMatrices);
 	renderManager->renderShadedModel(castleGuard, lightingShader, castleGuardModelMatrix, camera->position, viewProj, lightSpaceMatrix, true);
 
 	// Render light cube
