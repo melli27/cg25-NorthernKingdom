@@ -15,28 +15,9 @@ struct Vertex {
 	glm::vec3 Tangent;
 	glm::vec3 Bitangent;
 
-	//bone indexes which will influence this vertex
-	int boneIDs[MAX_BONE_INFLUENCE];
-
-	//weights from each bone
-	float weights[MAX_BONE_INFLUENCE];
+	int boneIDs[MAX_BONE_INFLUENCE] = { -1, -1, -1, -1 };
+	float weights[MAX_BONE_INFLUENCE] = { 0.0f, 0.0f, 0.0f, 0.0f };
 };
-
-//struct BoneData
-//{
-//	unsigned int boneIDs[4] = { 0,0,0,0 };
-//	float weights[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
-//
-//	void addBoneData(int boneID, float weight) {
-//		for (int i = 0; i < 4; i++) {
-//			if (weights[i] == 0.0f) {
-//				boneIDs[i] = boneID;
-//				weights[i] = weight;
-//				return;
-//			}
-//		}
-//	}
-//};
 
 class Mesh {
 public:

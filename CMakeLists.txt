@@ -18,6 +18,14 @@ find_package(gli CONFIG REQUIRED)
 #find_package(GLEW CONFIG REQUIRED)
 find_package(assimp CONFIG REQUIRED)
 
+# Explizit Debug/Release Libraries unterscheiden
+if(MSVC)
+    set_target_properties(assimp::assimp PROPERTIES
+        MAP_IMPORTED_CONFIG_DEBUG Debug
+        MAP_IMPORTED_CONFIG_RELEASE Release
+    )
+endif()
+
 # No C++20 modules
 set(CMAKE_CXX_SCAN_FOR_MODULES OFF) 
 
