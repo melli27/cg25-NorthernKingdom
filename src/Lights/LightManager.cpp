@@ -33,10 +33,10 @@ mat4 LightManager::calculateLightSpaceMatrix() const
 	DirectionalLight dirLight = directionalLights[0]; // TODO change if multiple lights
 
 	// Light space transformation matrix
-	float nearPlane = 1.0f, farPlane = 40.0f; // TODO adapt to scence size
-	float orthoSize = 10.0f; // 4.0f
-	vec3 sceneCenter = glm::vec3(0.0f, 0.0f, 0.0f);
-	vec3 lightPosition = sceneCenter - normalize(dirLight.direction) * 20.0f;
+	float nearPlane = 1.0f, farPlane = 90.0f; 
+	float orthoSize = 30.0f; // 4.0f
+	vec3 sceneCenter = glm::vec3(0.0f,-84.3137f, 25.0f);
+	vec3 lightPosition = sceneCenter - normalize(dirLight.direction) * 30.0f;
 	mat4 lightProjection = ortho(-orthoSize, orthoSize, -orthoSize, orthoSize, nearPlane, farPlane);
 	mat4 lightView = lookAt(lightPosition, sceneCenter, vec3(0.0, 1.0, 0.0));
 	mat4 lightSpaceMatrix = lightProjection * lightView;
