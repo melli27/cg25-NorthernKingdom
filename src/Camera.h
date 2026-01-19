@@ -46,8 +46,8 @@ public:
 		front = glm::vec3(0.0f, 0.0f, -1.0f);
 		right = glm::normalize(glm::cross(front, worldUp));
 		up = glm::normalize(glm::cross(right, front));
-		yaw = -90.0f;
-		pitch = 0.0f;
+		yaw = 120.0f;
+		pitch = -15.0f;
 		fov = fovStart;
 		aspectRatio = aspectRatioStart;
 		nearPlane = nearPlaneStart;

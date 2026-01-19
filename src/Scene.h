@@ -55,6 +55,7 @@ private:
     Model* tower;
 	Model* castleGuard;
     Model* girl;
+    Model* pavement;
     Geometry* lightCube;
     Geometry* testCube;
 	Skybox* skybox;
@@ -74,6 +75,7 @@ private:
     glm::mat4 houseMatrix2;
     glm::mat4 houseMatrix3;
     glm::mat4 towerMatrix;
+	glm::mat4 pavementModelMatrix;
 
     DirectionalLight dirLight{
         glm::vec3(-0.4f, -0.6f, -0.2f),  // direction
