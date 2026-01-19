@@ -21,15 +21,19 @@ void Model::setTexture(const char* diffusePath, const char* specularPath, const 
 	diffuse->type = "diffuseTexture";
 	newTextures.push_back(diffuse);
 
-	shared_ptr<Texture> specular = make_shared<Texture>();
-	specular->loadFromFile(specularPath);
-	specular->type = "specularTexture";
-	newTextures.push_back(specular);
+	if (specularPath) {
+		shared_ptr<Texture> specular = make_shared<Texture>();
+		specular->loadFromFile(specularPath);
+		specular->type = "specularTexture";
+		newTextures.push_back(specular);
+	}
 
-	shared_ptr<Texture> normal = make_shared<Texture>();
-	normal->loadFromFile(normalPath);
-	normal->type = "normalTexture";
-	newTextures.push_back(normal);
+	if (normalPath) {
+		shared_ptr<Texture> normal = make_shared<Texture>();
+		normal->loadFromFile(normalPath);
+		normal->type = "normalTexture";
+		newTextures.push_back(normal);
+	}
 
 	// Setze die neuen Texturen für alle Meshes
 	for (unsigned int i = 0; i < modelMeshes.size(); i++) {

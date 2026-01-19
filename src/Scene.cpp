@@ -55,15 +55,15 @@ void Scene::init() {
 	camera->setHeightOffset(2.0f);
 	backpack = new Model("assets/models/backpack/backpack.obj", false);
 	house = new Model("assets/models/city_house_2/city_house_2_bi.dae", true);
-	tower = new Model("assets/models/Medieval tower/Medieval tower_High/Medieval tower_High.dae", true);
+	tower = new Model("assets/models/Medieval tower/Medieval tower_High/Medieval tower_mid.dae", true);
 	castleGuard = new Model("assets/models/castle_guard/castle_guard.dae", true);
 	girl = new Model("assets/models/Peasant Girl/Peasant Girl.dae", true);
+	lamp = new Model("assets/models/lamp/lamp1.obj", true);
+	lamp->setTexture("assets/models/lamp/lamp1.png", nullptr, "assets/models/lamp/lamp1normal.jpg");
+	bigHouse = new Model("assets/models/small_building_1/small_building_1.dae", true);
 	
-	// Set textures
-	tower->setTexture("assets/models/Medieval tower/Medieval tower_mid_Col.jpg", "assets/models/Medieval tower/Medieval tower_mid_spec.jpg", "assets/models/Medieval tower/Medieval tower_mid_Nor.jpg");
-
 	// Load Animations
-	castleGuardAnimation = new Animation("assets/models/Reaction/Reaction.dae", castleGuard);
+	castleGuardAnimation = new Animation("assets/models/Unarmed Idle Looking Ver. 2.dae", castleGuard);
 	animator = new Animator(castleGuardAnimation);
 	catwalk = new Animation("assets/models/Catwalk Walk Turn 180 Tight.dae", girl);
 	animator2 = new Animator(catwalk);
@@ -90,11 +90,17 @@ void Scene::init() {
 	houseMatrix3 = glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(-11.0, terrainHeight, 17.0)), glm::vec3(1.5));
 	houseMatrix3 = glm::rotate(houseMatrix3, glm::radians(180.0f), vec3(0.0, 1.0, 1.0));
 	houseMatrix3 = glm::rotate(houseMatrix3, glm::radians(-90.0f), vec3(0.0, 0.0, 1.0));
+	
+	bigHouseMatrix = glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(-11.0, terrainHeight, 18.0)), glm::vec3(1.5));
+	bigHouseMatrix = glm::rotate(houseMatrix3, glm::radians(-90.0f), vec3(0.0, 1.0, 0.0));
+
+	lampMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(pointLight.position.x - 1.5, terrainHeight, pointLight.position.z));
 
 	towerMatrix = glm::rotate(glm::translate(glm::mat4(1.0f), glm::vec3(-11.0f, terrainHeight, 34.0f)), glm::radians(180.0f), vec3(0.0, 0.0, 1.0));
 	towerMatrix = glm::rotate(towerMatrix, glm::radians(90.0f), vec3(1.0, 0.0, 0.0));
 	
 	castleGuardModelMatrix = glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(-5.48f, terrainHeight, 33.245f)), glm::vec3(1.6f)); //glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
+	castleGuardModelMatrix = glm::rotate(castleGuardModelMatrix, glm::radians(80.0f), vec3(0.0, 1.0, 0.0));
 	girlMatrix = glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(11.0f, terrainHeight, 15.0f)), glm::vec3(1.6f)); //glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
 
 	// Setup Depthmap
@@ -128,22 +134,22 @@ void Scene::render(int window_width, int window_height, float deltaTime)
 	depthShader.setUniformMatrix4fv("lightSpaceMatrix", 1, GL_FALSE, lightSpaceMatrix);
 
 	// Backpack depth
-	depthShader.setUniformMatrix4fv("modelMatrix", 1, GL_FALSE, backpackModelMatrix);
 	depthShader.setUniform("isAnimated", false);
+	depthShader.setUniformMatrix4fv("modelMatrix", 1, GL_FALSE, backpackModelMatrix);
 	backpack->draw(depthShader);
 
-	// House depth
+	// Houses depth
 	depthShader.setUniformMatrix4fv("modelMatrix", 1, GL_FALSE, houseMatrix);
-	depthShader.setUniform("isAnimated", false);
 	house->draw(depthShader);
 	depthShader.setUniformMatrix4fv("modelMatrix", 1, GL_FALSE, houseMatrix2);
 	house->draw(depthShader);
 	depthShader.setUniformMatrix4fv("modelMatrix", 1, GL_FALSE, houseMatrix3);
 	house->draw(depthShader);
+	depthShader.setUniformMatrix4fv("modelMatrix", 1, GL_FALSE, bigHouseMatrix);
+	bigHouse->draw(depthShader);
 
 	// Tower depth
 	depthShader.setUniformMatrix4fv("modelMatrix", 1, GL_FALSE, towerMatrix);
-	depthShader.setUniform("isAnimated", false);
 	tower->draw(depthShader);
 
 	// Guard depth
@@ -177,10 +183,16 @@ void Scene::render(int window_width, int window_height, float deltaTime)
 	house->draw(pointDepthShader);
 	pointDepthShader.setUniformMatrix4fv("modelMatrix", 1, GL_FALSE, houseMatrix3);
 	house->draw(pointDepthShader);
+	pointDepthShader.setUniformMatrix4fv("modelMatrix", 1, GL_FALSE, bigHouseMatrix);
+	bigHouse->draw(pointDepthShader);
 
 	// Tower depth
 	pointDepthShader.setUniformMatrix4fv("modelMatrix", 1, GL_FALSE, towerMatrix);
 	tower->draw(pointDepthShader);
+
+	// Lantern
+	pointDepthShader.setUniformMatrix4fv("modelMatrix", 1, GL_FALSE, lampMatrix);
+	lamp->draw(pointDepthShader);
 
 	// Guard depth
 	renderManager->setAnimated(depthShader, boneMatrices);
@@ -201,7 +213,9 @@ void Scene::render(int window_width, int window_height, float deltaTime)
 	renderManager->renderShadedModel(house, lightingShader, houseMatrix, cameraPos, viewProj, lightSpaceMatrix, false);
 	renderManager->renderShadedModel(house, lightingShader, houseMatrix2, cameraPos, viewProj, lightSpaceMatrix, false);
 	renderManager->renderShadedModel(house, lightingShader, houseMatrix3, cameraPos, viewProj, lightSpaceMatrix, false);
+	renderManager->renderShadedModel(bigHouse, lightingShader, bigHouseMatrix, cameraPos, viewProj, lightSpaceMatrix, false);
 	renderManager->renderShadedModel(tower, lightingShader, towerMatrix, cameraPos, viewProj, lightSpaceMatrix, false);
+	renderManager->renderShadedModel(lamp, lightingShader, lampMatrix, cameraPos, viewProj, lightSpaceMatrix, false);
 
 	renderManager->setAnimated(lightingShader, boneMatrices);
 	renderManager->renderShadedModel(castleGuard, lightingShader, castleGuardModelMatrix, cameraPos, viewProj, lightSpaceMatrix, true);

@@ -50,11 +50,13 @@ private:
 
     Terrain* terrain;
     Model* backpack;
+    Model* bigHouse;
     Model* bench;
     Model* house;
     Model* tower;
 	Model* castleGuard;
     Model* girl;
+    Model* lamp;
     Geometry* lightCube;
     Geometry* testCube;
 	Skybox* skybox;
@@ -73,7 +75,9 @@ private:
     glm::mat4 houseMatrix;
     glm::mat4 houseMatrix2;
     glm::mat4 houseMatrix3;
+    glm::mat4 bigHouseMatrix;
     glm::mat4 towerMatrix;
+    glm::mat4 lampMatrix;
 
     DirectionalLight dirLight{
         glm::vec3(-0.4f, -0.6f, -0.2f),  // direction
@@ -84,7 +88,7 @@ private:
     };
 
     PointLight pointLight{
-        glm::vec3(12.0f, -81.3137, 10.0f), // position
+        glm::vec3(12.0f, -81, 10.0f), // position
         glm::vec3(1.0f, 1.0f, 1.0f),    // diffuse
         glm::vec3(0.2f, 0.2f, 0.2f),    // ambient
         glm::vec3(0.5f, 0.5f, 0.5f),    // specular
