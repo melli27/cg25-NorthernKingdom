@@ -71,12 +71,12 @@ void Scene::init() {
 	camera->position = glm::vec3(0.0f, terrainHeight + 5.0f, 10.0f);
 
 	// Setup Model Transforms
-	backpackModelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(-2.0f, terrainHeight + 2, -3.0f));
+	backpackModelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(-7.0f, terrainHeight + 1, 19.0f));
 	backpackModelMatrix = glm::scale(backpackModelMatrix, glm::vec3(0.3f));
 
 	houseMatrix = glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(11.0f, terrainHeight, 25.0f)), glm::vec3(1.5));
 	houseMatrix = glm::rotate(houseMatrix, glm::radians(180.0f), vec3(0.0, 1.0, 1.0));
-	houseMatrix = glm::rotate(houseMatrix, glm::radians(90.0f), vec3(0.0, 0.0, 1.0));
+	houseMatrix = glm::rotate(houseMatrix, glm::radians(45.0f), vec3(0.0, 0.0, 1.0));
 
 	houseMatrix2 = glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(5.0, terrainHeight, 30.0)), glm::vec3(1.5));
 	houseMatrix2 = glm::rotate(houseMatrix2, glm::radians(180.0f), vec3(0.0, 1.0, 1.0));
@@ -84,7 +84,7 @@ void Scene::init() {
 
 	houseMatrix3 = glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(-11.0, terrainHeight, 17.0)), glm::vec3(1.5));
 	houseMatrix3 = glm::rotate(houseMatrix3, glm::radians(180.0f), vec3(0.0, 1.0, 1.0));
-	houseMatrix3 = glm::rotate(houseMatrix3, glm::radians(45.0f), vec3(0.0, 0.0, 1.0));
+	houseMatrix3 = glm::rotate(houseMatrix3, glm::radians(-90.0f), vec3(0.0, 0.0, 1.0));
 
 	towerMatrix = glm::rotate(glm::translate(glm::mat4(1.0f), glm::vec3(-11.0f, terrainHeight, 34.0f)), glm::radians(180.0f), vec3(0.0, 0.0, 1.0));
 	towerMatrix = glm::rotate(towerMatrix, glm::radians(90.0f), vec3(1.0, 0.0, 0.0));
@@ -212,7 +212,7 @@ void Scene::render(int window_width, int window_height, float deltaTime)
 	terrainParams.minTessLevel = 3.0f;
 	terrainParams.maxTessLevel = 60.0f;
 	terrainParams.minDistance = 3.0f;
-	terrainParams.maxDistance = 200.0f;
+	terrainParams.maxDistance = 250.0f;
 	renderManager->renderTerrain(terrain, terrainShader, terrainModelMatrix, view, projection, depthmap->getDepthMapTextureID(), lightSpaceMatrix, terrainParams);
 
 	// Render skybox
