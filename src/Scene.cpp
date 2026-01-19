@@ -51,6 +51,8 @@ void Scene::init() {
 	//lightCube = new Geometry(glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f)), Geometry::createCubeGeometry(0.2f, 0.2f, 0.2f));
 
 	terrain = new Terrain(terrainShader, "assets/heightmap2.png");
+	camera->setTerrain(terrain);
+	camera->setHeightOffset(2.0f);
 	backpack = new Model("assets/models/backpack/backpack.obj", false);
 	house = new Model("assets/models/city_house_2/city_house_2_bi.dae", true);
 	tower = new Model("assets/models/Medieval tower/Medieval tower_High/Medieval tower_High.dae", true);
@@ -213,6 +215,7 @@ void Scene::render(int window_width, int window_height, float deltaTime)
 	terrainParams.maxTessLevel = 60.0f;
 	terrainParams.minDistance = 3.0f;
 	terrainParams.maxDistance = 250.0f;
+
 	renderManager->renderTerrain(terrain, terrainShader, terrainModelMatrix, view, projection, depthmap->getDepthMapTextureID(), lightSpaceMatrix, terrainParams);
 
 	// Render skybox
