@@ -59,6 +59,9 @@ void Scene::init() {
 	castleGuard = new Model("assets/models/castle_guard/castle_guard.dae", true);
 	girl = new Model("assets/models/Peasant Girl/Peasant Girl.dae", true);
 	
+	// Set textures
+	tower->setTexture("assets/models/Medieval tower/Medieval tower_mid_Col.jpg", "assets/models/Medieval tower/Medieval tower_mid_spec.jpg", "assets/models/Medieval tower/Medieval tower_mid_Nor.jpg");
+
 	// Load Animations
 	castleGuardAnimation = new Animation("assets/models/Reaction/Reaction.dae", castleGuard);
 	animator = new Animator(castleGuardAnimation);
@@ -91,7 +94,7 @@ void Scene::init() {
 	towerMatrix = glm::rotate(glm::translate(glm::mat4(1.0f), glm::vec3(-11.0f, terrainHeight, 34.0f)), glm::radians(180.0f), vec3(0.0, 0.0, 1.0));
 	towerMatrix = glm::rotate(towerMatrix, glm::radians(90.0f), vec3(1.0, 0.0, 0.0));
 	
-	castleGuardModelMatrix = glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(-3.0f, terrainHeight, 15.0f)), glm::vec3(1.6f)); //glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
+	castleGuardModelMatrix = glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(-5.48f, terrainHeight, 33.245f)), glm::vec3(1.6f)); //glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
 	girlMatrix = glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(11.0f, terrainHeight, 15.0f)), glm::vec3(1.6f)); //glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
 
 	// Setup Depthmap

@@ -12,6 +12,33 @@ void Model::draw(Shader& shader)
 	}
 }
 
+void Model::setTexture(const char* diffusePath, const char* specularPath, const char* normalPath)
+{
+	vector<shared_ptr<Texture>> newTextures;
+
+	shared_ptr<Texture> diffuse = make_shared<Texture>();
+	diffuse->loadFromFile(diffusePath);
+	diffuse->type = "diffuseTexture";
+	newTextures.push_back(diffuse);
+
+	shared_ptr<Texture> specular = make_shared<Texture>();
+	specular->loadFromFile(specularPath);
+	specular->type = "specularTexture";
+	newTextures.push_back(specular);
+
+	shared_ptr<Texture> normal = make_shared<Texture>();
+	normal->loadFromFile(normalPath);
+	normal->type = "normalTexture";
+	newTextures.push_back(normal);
+
+	// Setze die neuen Texturen für alle Meshes
+	for (unsigned int i = 0; i < modelMeshes.size(); i++) {
+		modelMeshes[i].textures = newTextures;
+	}
+
+	cout << "Set custom textures for " << modelMeshes.size() << " meshes" << endl;
+}
+
 
 void Model::loadModel(string const& path, bool flipUVs)
 {
@@ -191,7 +218,7 @@ void Model::processBones(vector<Vertex>& vertices, aiMesh* mesh)
 			float weightValue = weights[j].mWeight;
 			assert(vertexID <= vertices.size());
 			Vertex& vertex = vertices[vertexID];
-			
+
 			for (int k = 0; k < MAX_BONE_INFLUENCE; ++k)
 			{
 				if (vertex.boneIDs[k] < 0)
