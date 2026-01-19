@@ -82,7 +82,7 @@ void Scene::init() {
 	camera->position = glm::vec3(15.0f, terrainHeight + 10.0f, -2.0f);
 
 	// Setup Model Transforms
-	backpackModelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(-7.0f, terrainHeight + 1, 19.0f));
+	backpackModelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(-7.0f, terrainHeight +0.5, 19.0f));
 	backpackModelMatrix = glm::scale(backpackModelMatrix, glm::vec3(0.3f));
 
 	houseMatrix = glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(11.0f, terrainHeight, 25.0f)), glm::vec3(1.5));
@@ -97,17 +97,17 @@ void Scene::init() {
 	houseMatrix3 = glm::rotate(houseMatrix3, glm::radians(180.0f), vec3(0.0, 1.0, 1.0));
 	houseMatrix3 = glm::rotate(houseMatrix3, glm::radians(-90.0f), vec3(0.0, 0.0, 1.0));
 	
-	bigHouseMatrix = glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(-11.0, terrainHeight, 18.0)), glm::vec3(1.5));
-	bigHouseMatrix = glm::rotate(houseMatrix3, glm::radians(-90.0f), vec3(1.0, 0.0, 0.0));
+	bigHouseMatrix = glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(1.5, terrainHeight, 12.5)), glm::vec3(1.5));
+	bigHouseMatrix = glm::rotate(bigHouseMatrix, glm::radians(-90.0f), vec3(1.0, 0.0, 0.0));
 
 	lampMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(pointLight.position.x - 1.5, terrainHeight, pointLight.position.z));
-
+	lampMatrix = glm::rotate(lampMatrix, glm::radians(-90.0f), glm::vec3(0.0, 1.0, 0.0));
 	towerMatrix = glm::rotate(glm::translate(glm::mat4(1.0f), glm::vec3(-11.0f, terrainHeight, 34.0f)), glm::radians(180.0f), vec3(0.0, 0.0, 1.0));
 	towerMatrix = glm::rotate(towerMatrix, glm::radians(90.0f), vec3(1.0, 0.0, 0.0));
 	
 	castleGuardModelMatrix = glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(-5.48f, terrainHeight, 33.245f)), glm::vec3(1.6f)); //glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
 	castleGuardModelMatrix = glm::rotate(castleGuardModelMatrix, glm::radians(150.0f), vec3(0.0, 1.0, 0.0));
-	girlMatrix = glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(11.0f, terrainHeight, 15.0f)), glm::vec3(1.6f)); //glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
+	girlMatrix = glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, terrainHeight, 20.0f)), glm::vec3(1.6f)); //glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
 
 	pavementModelMatrix = glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, terrainHeight + 0.03f, 24.0f)), glm::vec3(6.0f));
 	pavementModelMatrix = glm::rotate(pavementModelMatrix, glm::radians(-20.0f), vec3(0.0, 1.0, 0.0));
@@ -242,7 +242,7 @@ void Scene::render(int window_width, int window_height, float deltaTime)
 	renderManager->renderShadedModel(girl, lightingShader, girlMatrix, cameraPos, viewProj, lightSpaceMatrix, true);
 
 	// Render light cube
-	renderManager->renderLightCube(lightCube, lightSourceShader, viewProj);
+	//renderManager->renderLightCube(lightCube, lightSourceShader, viewProj);
 
 	// Render terrain
 	TerrainRenderParams terrainParams;

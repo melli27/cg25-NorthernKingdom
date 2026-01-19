@@ -90,7 +90,7 @@ private:
     };
 
     PointLight pointLight{
-        glm::vec3(12.0f, -81, 10.0f), // position
+        glm::vec3(15.0f, -81, 17.0f), // position
         glm::vec3(1.0f, 1.0f, 1.0f),    // diffuse
         glm::vec3(0.2f, 0.2f, 0.2f),    // ambient
         glm::vec3(0.5f, 0.5f, 0.5f),    // specular
