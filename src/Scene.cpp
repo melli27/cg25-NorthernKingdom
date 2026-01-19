@@ -98,7 +98,7 @@ void Scene::init() {
 	houseMatrix3 = glm::rotate(houseMatrix3, glm::radians(-90.0f), vec3(0.0, 0.0, 1.0));
 	
 	bigHouseMatrix = glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(-11.0, terrainHeight, 18.0)), glm::vec3(1.5));
-	bigHouseMatrix = glm::rotate(houseMatrix3, glm::radians(-90.0f), vec3(0.0, 1.0, 0.0));
+	bigHouseMatrix = glm::rotate(houseMatrix3, glm::radians(-90.0f), vec3(1.0, 0.0, 0.0));
 
 	lampMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(pointLight.position.x - 1.5, terrainHeight, pointLight.position.z));
 
@@ -106,10 +106,10 @@ void Scene::init() {
 	towerMatrix = glm::rotate(towerMatrix, glm::radians(90.0f), vec3(1.0, 0.0, 0.0));
 	
 	castleGuardModelMatrix = glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(-5.48f, terrainHeight, 33.245f)), glm::vec3(1.6f)); //glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
-	castleGuardModelMatrix = glm::rotate(castleGuardModelMatrix, glm::radians(80.0f), vec3(0.0, 1.0, 0.0));
+	castleGuardModelMatrix = glm::rotate(castleGuardModelMatrix, glm::radians(150.0f), vec3(0.0, 1.0, 0.0));
 	girlMatrix = glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(11.0f, terrainHeight, 15.0f)), glm::vec3(1.6f)); //glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
 
-	pavementModelMatrix = glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, terrainHeight + 0.1f, 24.0f)), glm::vec3(6.0f));
+	pavementModelMatrix = glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, terrainHeight + 0.03f, 24.0f)), glm::vec3(6.0f));
 	pavementModelMatrix = glm::rotate(pavementModelMatrix, glm::radians(-20.0f), vec3(0.0, 1.0, 0.0));
 
 	// Setup Depthmap
