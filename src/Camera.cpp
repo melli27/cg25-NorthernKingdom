@@ -20,6 +20,14 @@ void Camera::move(Camera_Movement direction, float deltaTime) {
 		position -= right * velocity;
 	if (direction == RIGHT)
 		position += right * velocity;
+
+	// Terrain collision check
+	if (terrain != nullptr) {
+		float terrainHeight = terrain->getHeightAt(position.x, position.z);
+		if (position.y < terrainHeight + heightOffset) {
+			position.y = terrainHeight + heightOffset;
+		}
+	}
 }
 
 void Camera::rotate(float xoffset, float yoffset, bool constrainPitch) {

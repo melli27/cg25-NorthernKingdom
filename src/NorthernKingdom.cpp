@@ -79,6 +79,7 @@ int main()
 	Scene scene(&camera);
 	scene.init();
 
+
 	// -----------
 	// render loop
 	// -----------

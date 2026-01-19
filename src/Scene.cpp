@@ -51,6 +51,8 @@ void Scene::init() {
 	//lightCube = new Geometry(glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f)), Geometry::createCubeGeometry(0.2f, 0.2f, 0.2f));
 
 	terrain = new Terrain(terrainShader, "assets/heightmap2.png");
+	camera->setTerrain(terrain);
+	camera->setHeightOffset(2.0f);
 	backpack = new Model("assets/models/backpack/backpack.obj", false);
 	house = new Model("assets/models/city_house_2/city_house_2_bi.dae", true);
 	tower = new Model("assets/models/Medieval tower/Medieval tower_High/Medieval tower_High.dae", true);
@@ -59,6 +61,9 @@ void Scene::init() {
 
 	pavement = new Model("assets/models/pavement/pavement.obj", true);
 	
+	// Set textures
+	tower->setTexture("assets/models/Medieval tower/Medieval tower_mid_Col.jpg", "assets/models/Medieval tower/Medieval tower_mid_spec.jpg", "assets/models/Medieval tower/Medieval tower_mid_Nor.jpg");
+
 	// Load Animations
 	castleGuardAnimation = new Animation("assets/models/Reaction/Reaction.dae", castleGuard);
 	animator = new Animator(castleGuardAnimation);
@@ -91,7 +96,7 @@ void Scene::init() {
 	towerMatrix = glm::rotate(glm::translate(glm::mat4(1.0f), glm::vec3(-11.0f, terrainHeight, 34.0f)), glm::radians(180.0f), vec3(0.0, 0.0, 1.0));
 	towerMatrix = glm::rotate(towerMatrix, glm::radians(90.0f), vec3(1.0, 0.0, 0.0));
 	
-	castleGuardModelMatrix = glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(-3.0f, terrainHeight, 15.0f)), glm::vec3(1.6f)); //glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
+	castleGuardModelMatrix = glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(-5.48f, terrainHeight, 33.245f)), glm::vec3(1.6f)); //glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
 	girlMatrix = glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(11.0f, terrainHeight, 15.0f)), glm::vec3(1.6f)); //glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
 
 	pavementModelMatrix = glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, terrainHeight + 0.1f, 23.0f)), glm::vec3(6.0f));
@@ -229,6 +234,7 @@ void Scene::render(int window_width, int window_height, float deltaTime)
 	terrainParams.maxTessLevel = 60.0f;
 	terrainParams.minDistance = 3.0f;
 	terrainParams.maxDistance = 250.0f;
+
 	renderManager->renderTerrain(terrain, terrainShader, terrainModelMatrix, view, projection, depthmap->getDepthMapTextureID(), lightSpaceMatrix, terrainParams);
 
 	// Render skybox

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Utils/Utils.h"
+#include <Terrain/Terrain.h>
 
 enum Camera_Movement {
 	FORWARD,
@@ -19,6 +20,8 @@ struct CameraPose {
 
 class Camera {
 public:
+	Terrain* terrain = nullptr;
+	float heightOffset = 2.0f; // Mindestabstand zum Terrain
 	glm::vec3 position;
 	glm::vec3 front;
 	glm::vec3 up;
@@ -68,6 +71,9 @@ public:
 	void stopPlayback();
 	bool getPlaybackMode() const { return playbackMode; }
 	bool updatePlayback(float timeSeconds);
+
+	void setTerrain(Terrain* t) { terrain = t; }
+	void setHeightOffset(float offset) { heightOffset = offset; }
 
 private:
 	void updateCameraVectors();

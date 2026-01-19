@@ -24,6 +24,7 @@ public:
 
 	Model(string const& path, bool flipUVs);
 	void draw(Shader& shader);
+	void setTexture(const char* diffusePath, const char* specularPath, const char* normalPath);
 
 	const aiScene* getScene() const { return scene; }
 	map<string, BoneInfo>& getBoneInfoMap() { return boneInfoMap; }

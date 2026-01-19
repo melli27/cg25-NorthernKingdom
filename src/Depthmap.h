@@ -22,8 +22,8 @@ public:
 	unsigned int getDepthMapTextureID() const { return depthMap; }
 
 private:
-	const unsigned int SHADOW_WIDTH = 2048;
-	const unsigned int SHADOW_HEIGHT = 2048;
+	const unsigned int SHADOW_WIDTH = 4096;
+	const unsigned int SHADOW_HEIGHT = 4096;
 
 	// Directional depth map FBO
 	unsigned int depthMapFBO;
