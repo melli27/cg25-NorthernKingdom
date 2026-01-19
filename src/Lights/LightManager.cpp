@@ -34,7 +34,7 @@ mat4 LightManager::calculateLightSpaceMatrix() const
 
 	// Light space transformation matrix
 	float nearPlane = 1.0f, farPlane = 90.0f; 
-	float orthoSize = 30.0f; // 4.0f
+	float orthoSize = 20.0f; // 4.0f
 	vec3 sceneCenter = glm::vec3(0.0f,-84.3137f, 25.0f);
 	vec3 lightPosition = sceneCenter - normalize(dirLight.direction) * 30.0f;
 	mat4 lightProjection = ortho(-orthoSize, orthoSize, -orthoSize, orthoSize, nearPlane, farPlane);
