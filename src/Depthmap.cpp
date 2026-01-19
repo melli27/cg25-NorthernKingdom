@@ -53,14 +53,16 @@ void Depthmap::DephtmapRenderSetup()
 	glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
 	glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
 	glClear(GL_DEPTH_BUFFER_BIT);
-	glEnable(GL_CULL_FACE);
-	glCullFace(GL_FRONT);
+	//glEnable(GL_CULL_FACE);
+	//glCullFace(GL_FRONT);
+	glDisable(GL_CULL_FACE);
+
 }
 
 void Depthmap::CubemapRenderSetup()
 {
-	glCullFace(GL_BACK);
-	glDisable(GL_CULL_FACE);
+	//glCullFace(GL_BACK);
+	//glDisable(GL_CULL_FACE);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	// 1. pass: render to depth cubemap
 	// --------------------------------

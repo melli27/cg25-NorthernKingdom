@@ -99,9 +99,8 @@ void Scene::init() {
 	castleGuardModelMatrix = glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(-5.48f, terrainHeight, 33.245f)), glm::vec3(1.6f)); //glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
 	girlMatrix = glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(11.0f, terrainHeight, 15.0f)), glm::vec3(1.6f)); //glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
 
-	pavementModelMatrix = glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, terrainHeight + 0.1f, 23.0f)), glm::vec3(6.0f));
-	pavementModelMatrix = glm::rotate(pavementModelMatrix, glm::radians(-25.0f), vec3(0.0, 1.0, 0.0));
-	//pavementModelMatrix = glm::rotate(pavementModelMatrix, glm::radians(90.0f), vec3(1.0, 0.0, 0.0));
+	pavementModelMatrix = glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, terrainHeight + 0.1f, 24.0f)), glm::vec3(6.0f));
+	pavementModelMatrix = glm::rotate(pavementModelMatrix, glm::radians(-20.0f), vec3(0.0, 1.0, 0.0));
 
 	// Setup Depthmap
 	depthmap = new Depthmap();
