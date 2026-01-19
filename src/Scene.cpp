@@ -82,7 +82,7 @@ void Scene::init() {
 	camera->position = glm::vec3(15.0f, terrainHeight + 10.0f, -2.0f);
 
 	// Setup Model Transforms
-	backpackModelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(-7.0f, terrainHeight, 19.0f));
+	backpackModelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(8.0f, terrainHeight + 3.0, 22.0f));
 	backpackModelMatrix = glm::scale(backpackModelMatrix, glm::vec3(0.3f));
 
 	houseMatrix = glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(11.0f, terrainHeight, 25.0f)), glm::vec3(1.5));
@@ -243,15 +243,15 @@ void Scene::render(int window_width, int window_height, float deltaTime)
 	renderManager->renderShadedModel(girl, lightingShader, girlMatrix, cameraPos, viewProj, lightSpaceMatrix, true);
 
 	// Render light cube
-	renderManager->renderLightCube(lightCube, lightSourceShader, viewProj);
+	//renderManager->renderLightCube(lightCube, lightSourceShader, viewProj);
 
 	// Render terrain
 	TerrainRenderParams terrainParams;
 	terrainParams.cameraPos = vec3(cameraPos.x, cameraPos.y - terrain->getHeightAt(cameraPos.x, cameraPos.y), cameraPos.z);
-	terrainParams.minTessLevel = 3.0f;
+	terrainParams.minTessLevel = 0.0f;
 	terrainParams.maxTessLevel = 60.0f;
 	terrainParams.minDistance = 3.0f;
-	terrainParams.maxDistance = 250.0f;
+	terrainParams.maxDistance = 200.0f;
 
 	renderManager->renderTerrain(terrain, terrainShader, terrainModelMatrix, view, projection, depthmap->getDepthMapTextureID(), lightSpaceMatrix, terrainParams);
 
