@@ -251,7 +251,7 @@ void Scene::render(int window_width, int window_height, float deltaTime)
 	terrainParams.minTessLevel = 0.0f;
 	terrainParams.maxTessLevel = 60.0f;
 	terrainParams.minDistance = 3.0f;
-	terrainParams.maxDistance = 200.0f;
+	terrainParams.maxDistance = 210.0f;
 
 	renderManager->renderTerrain(terrain, terrainShader, terrainModelMatrix, view, projection, depthmap->getDepthMapTextureID(), lightSpaceMatrix, terrainParams);
 
