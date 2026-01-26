@@ -268,5 +268,4 @@ void Scene::render(int window_width, int window_height, float deltaTime)
 
 	// Render skybox
 	skybox->draw(skyboxShader, view, projection);
-	skybox->draw(skyboxShader, view, projection);
 }
