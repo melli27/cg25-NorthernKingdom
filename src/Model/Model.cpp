@@ -302,6 +302,13 @@ void Model::loadMaterialTextures(aiMesh* mesh, std::vector<std::shared_ptr<Textu
 	aiTextureType types[4] = { aiTextureType_DIFFUSE, aiTextureType_SPECULAR, aiTextureType_NORMALS, aiTextureType_EMISSIVE }; //TODO add more?
 	string typeNames[4] = { "diffuseTexture", "specularTexture", "normalTexture", "emissionTexture" };
 
+	// fallback when normal maps stored in HEIGHT
+	if (material->GetTextureCount(aiTextureType_NORMALS) == 0 &&
+		material->GetTextureCount(aiTextureType_HEIGHT) > 0)
+	{
+		types[2] = aiTextureType_HEIGHT;
+	}
+
 	for (int i = 0; i < 4; i++)
 	{
 		aiTextureType type = types[i];
