@@ -1,0 +1,50 @@
+# Blender 5.0.1 MTL File: 'well.blend'
+# www.blender.org
+
+newmtl Bucket
+Ns 20.000006
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 1
+map_Kd Bucket_Albedo.tga.png
+map_Bump Bucket_normals.tga.png
+map_Ks Bucket_Albedo.tga.png
+
+newmtl Roof
+Ns 20.000006
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 1
+map_Kd Wood_varA_A.tga.png
+map_Bump Wood_varA_N.tga.png
+map_Ks Wood_varA_A.tga.png
+
+newmtl Well
+Ns 20.000006
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 1
+map_Kd Well_Albedo.tga.png
+map_Bump Well_Normals.tga.png
+map_Ks Well_Albedo.tga.png
+
+newmtl rope
+Ns 20.000006
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 1
+map_Kd Rope_A.tga.png
+map_Bump Rope_N.tga.png
+map_Ks Rope_A.tga.png
