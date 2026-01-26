@@ -1,0 +1,3 @@
+Model by Vinny Passmore, from: https://sketchfab.com/3d-models/tavern-hanging-sign-6b45303474154c2da9af477e63009f73
+
+Modified material assignment.
