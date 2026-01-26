@@ -66,12 +66,12 @@ void InputManager::processInput(GLFWwindow* window, float deltaTime)
 	}
 
 	// light source toggles
-	if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS && !pointLightKeyPressed)
+	if (glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS && !pointLightKeyPressed)
 	{
 		pointLightKeyPressed = true;
 		pointLightMode = !pointLightMode;
 	}
-	if (glfwGetKey(window, GLFW_KEY_1) == GLFW_RELEASE)
+	if (glfwGetKey(window, GLFW_KEY_L) == GLFW_RELEASE)
 	{
 		pointLightKeyPressed = false;
 	}

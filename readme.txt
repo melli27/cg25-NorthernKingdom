@@ -13,5 +13,6 @@ Quynh Nhu Jennifer Tran
     - Omnidirectional Shadow Map (complex effect)
     - Blinn-Phong illumination
     - Skybox (Cubemap)
+    - (Normal Mapping with manual tangent space computation (complex effect))
 
 The demo was tested on a NVIDIA GeForce RTX 4070 Ti SUPER and Intel.
