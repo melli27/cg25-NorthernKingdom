@@ -20,6 +20,9 @@ Mesh::Mesh(vector<Vertex> vertices, vector<unsigned int> indices, vector<shared_
 
 void Mesh::Draw(Shader &shader)
 {
+	glUniform1i(glGetUniformLocation(shader.ID, "hasEmission"), 0);
+	glUniform1i(glGetUniformLocation(shader.ID, "hasNormalMap"), 0);
+
 	//glBindVertexArray(VAO); //TODO needed?
 	for (unsigned int i = 0; i < textures.size(); i++)
 	{
@@ -34,8 +37,14 @@ void Mesh::Draw(Shader &shader)
 			uniformName = "material.diffuseTexture";
 		else if (name == "specularTexture")
 			uniformName = "material.specularTexture";
-		else if (name == "normalTexture")
+		else if (name == "normalTexture") {
 			uniformName = "material.normalTexture";
+			glUniform1i(glGetUniformLocation(shader.ID, "hasNormalMap"), 1);
+		}
+		else if (name == "emissionTexture") {
+			uniformName = "material.emissionTexture";
+			glUniform1i(glGetUniformLocation(shader.ID, "hasEmission"), 1);
+		}
 		else
 			uniformName = "material.diffuseTexture";
 		

@@ -83,11 +83,11 @@ void Depthmap::normalRenderSetup(int window_width, int window_height)
 	glViewport(0, 0, window_width, window_height);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	const int dirShadowUnit = 3;
+	const int dirShadowUnit = 10;
 	glActiveTexture(GL_TEXTURE0 + dirShadowUnit);
 	glBindTexture(GL_TEXTURE_2D, depthMap);
 
-	const int pointShadowUnit = 4;
+	const int pointShadowUnit = 11;
 	glActiveTexture(GL_TEXTURE0 + pointShadowUnit);
 	glBindTexture(GL_TEXTURE_CUBE_MAP, depthCubemap);
 }

@@ -3,7 +3,9 @@
 struct Material
 {
     sampler2D diffuseTexture;
-    sampler2D specularTexture;    
+    sampler2D specularTexture;
+    sampler2D emissionTexture;
+    sampler2D normalTexture;
     float shininess;
 };
 
@@ -30,6 +32,8 @@ in vec3 FragPos;
 in vec3 Normal;  
 in vec2 TexCoords;
 in vec4 FragPosLightSpace;
+in vec3 Tangent;
+in vec3 Bitangent;
 
 out vec4 FragColor;
 
@@ -41,6 +45,9 @@ uniform sampler2D shadowMap;
 uniform samplerCube pointShadowMap;
 uniform float farPlane;
 uniform int pointLightOn;
+uniform int hasEmission;
+uniform int normalMappingOn;
+uniform int hasNormalMap;
 
 vec3 sampleOffsetDirections[20] = vec3[]
 (
@@ -146,14 +153,29 @@ vec3 calculatePointLight(vec3 normal, vec3 viewDir)
 void main()
 {
     vec3 normal = normalize(Normal);
+
+    if (normalMappingOn == 1 && hasNormalMap == 1) {
+        normal = texture(material.normalTexture, TexCoords).rgb;
+        normal = normal * 2.0 - 1.0;
+        mat3 TBN = mat3(normalize(Tangent), normalize(Bitangent), normalize(Normal));
+        normal = normalize(TBN * normal);
+    }
+
     vec3 viewDir = normalize(viewPos - FragPos);
     vec3 color = calculateDirLight(normal, viewDir); // Blinn-Phong for directional light
 
-    if (pointLightOn == 1)
+    if (pointLightOn == 1) {
         color += calculatePointLight(normal, viewDir); // Blinn-Phong for point light
+        if (hasEmission == 1) {
+            float emissionStrength = 6.0f;
+            color += vec3(texture(material.emissionTexture, TexCoords)) * emissionStrength;
+        }
+    }
 
     //vec3 color = calculatePointLight(normal, viewDir);
-
     FragColor = vec4(color, 1.0);
     //FragColor = texture(material.diffuseTexture, TexCoords);
+    // FragColor = vec4(texture(material.normalTexture, TexCoords).rgb, 1.0);
+    // FragColor = vec4(texture(material.specularTexture, TexCoords).rgb, 1.0);
+
 }

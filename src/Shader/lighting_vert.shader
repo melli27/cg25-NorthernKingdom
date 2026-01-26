@@ -18,10 +18,15 @@ out vec3 FragPos;
 out vec3 Normal;
 out vec2 TexCoords;
 out vec4 FragPosLightSpace;
+out vec3 Tangent;
+out vec3 Bitangent;
 
 void main() 
 {
     vec4 worldPos;
+    vec3 T;
+    vec3 N;
+    vec3 B;
 
     if(isAnimated)
     {
@@ -34,15 +39,29 @@ void main()
         vec4 skinnedPos = boneTransform * vec4(position, 1.0);
         worldPos = modelMatrix * skinnedPos;
         mat3 normalMat = mat3(transpose(inverse(modelMatrix)));
-        Normal = normalMat * mat3(boneTransform) * normal;    
+        N = normalize(normalMat * mat3(boneTransform) * normal);
+        T = normalize(mat3(modelMatrix) * mat3(boneTransform) * tangent);
+        B = normalize(mat3(modelMatrix) * mat3(boneTransform) * bitangent);
     }
     else
     {
         worldPos = modelMatrix * vec4(position, 1.0);
-        Normal = mat3(transpose(inverse(modelMatrix))) * normal;
+        N = normalize(mat3(transpose(inverse(modelMatrix))) * normal);
+        T = normalize(mat3(modelMatrix) * tangent);
+        B = normalize(mat3(modelMatrix) * bitangent);
+    }
+
+    T = normalize(T - N * dot(N, T));
+    vec3 Bfixed = cross(N, T);
+    if (dot(Bfixed, B) < 0.0) {
+        Bfixed = -Bfixed;
     }
 
     FragPos = vec3(worldPos);
+
+    Normal = N;
+    Tangent = T;
+    Bitangent = normalize(Bfixed);
 
     TexCoords = uv;
     FragPosLightSpace = lightSpaceMatrix * worldPos;

@@ -3,6 +3,8 @@
 
 bool InputManager::pointLightMode = true;
 bool InputManager::pointLightKeyPressed = false;
+bool InputManager::normalMappingMode = true;
+bool InputManager::normalMappingKeyPressed = false;
 
 InputManager::InputManager(Camera* camera) : camera(camera)
 {
@@ -121,6 +123,16 @@ void InputManager::processInput(GLFWwindow* window, float deltaTime)
 		}
 		return;
 	}
+
+	if (glfwGetKey(window, GLFW_KEY_N) == GLFW_PRESS && !normalMappingKeyPressed)
+	{
+		normalMappingKeyPressed = true;
+		normalMappingMode = !normalMappingMode;
+	}
+	if (glfwGetKey(window, GLFW_KEY_N) == GLFW_RELEASE)
+	{
+		normalMappingKeyPressed = false;
+	}
 }
 
 
@@ -165,6 +177,11 @@ void InputManager::scrollCallback(GLFWwindow* window, double xoffset, double yof
 bool InputManager::getPointLightMode()
 {
 	return pointLightMode;
+}
+
+bool InputManager::getNormalMappingMode()
+{
+	return normalMappingMode;
 }
 
 void InputManager::toggleCameraRecording()

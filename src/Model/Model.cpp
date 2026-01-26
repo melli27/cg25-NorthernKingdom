@@ -5,6 +5,55 @@ Model::Model(string const& path, bool flipUVs)
 	loadModel(path, flipUVs);
 }
 
+void computeTangentsBitangents(vector<Vertex>& vertices, vector<unsigned int>& indices)
+{
+	for (int i = 0; i + 2 < indices.size(); i += 3) {
+		Vertex& v0 = vertices[indices[i]];
+		Vertex& v1 = vertices[indices[i + 1]];
+		Vertex& v2 = vertices[indices[i + 2]];
+
+		const glm::vec3& pos0 = v0.Position;
+		const glm::vec3& pos1 = v1.Position;
+		const glm::vec3& pos2 = v2.Position;
+
+		const glm::vec2& uv0 = v0.TexCoords;
+		const glm::vec2& uv1 = v1.TexCoords;
+		const glm::vec2& uv2 = v2.TexCoords;
+
+		glm::vec3 edge1 = pos1 - pos0;
+		glm::vec3 edge2 = pos2 - pos0;
+		glm::vec2 deltaUV1 = uv1 - uv0;
+		glm::vec2 deltaUV2 = uv2 - uv0;
+
+		float f = 1.0f / (deltaUV1.x * deltaUV2.y - deltaUV2.x * deltaUV1.y);
+		
+		glm::vec3 tangent = f * (deltaUV2.y * edge1 - deltaUV1.y * edge2);
+		glm::vec3 bitangent = f * (-deltaUV2.x * edge1 + deltaUV1.x * edge2);
+
+		v0.Tangent += tangent;
+		v1.Tangent += tangent;
+		v2.Tangent += tangent;
+		v0.Bitangent += bitangent;
+		v1.Bitangent += bitangent;
+		v2.Bitangent += bitangent;
+	}
+
+	for (auto& vertex : vertices) {
+		glm::vec3 N = glm::normalize(vertex.Normal);
+		glm::vec3 T = vertex.Tangent;
+
+		T = glm::normalize(T - N * glm::dot(N, T));
+
+		glm::vec3 B = glm::cross(N, T);
+		if (glm::dot(B, vertex.Bitangent) < 0.0f) {
+			B = -B;
+		}
+
+		vertex.Tangent = T;
+		vertex.Bitangent = glm::normalize(B);
+	}
+}
+
 void Model::draw(Shader& shader)
 {
 	for (unsigned int i = 0; i < modelMeshes.size(); i++) {
@@ -128,17 +177,20 @@ Mesh Model::processMesh(aiMesh* mesh)
 		}
 
 		// tangents & bitangents
-		if (mesh->mTangents && mesh->mBitangents)
-		{
-			aiVector3D& tangent = mesh->mTangents[i];
-			v.Tangent = glm::vec3(tangent.x, tangent.y, tangent.z);
-			aiVector3D& bitangent = mesh->mBitangents[i];
-			v.Bitangent = glm::vec3(bitangent.x, bitangent.y, bitangent.z);
-		}
-		else {
-			v.Tangent = glm::vec3(0.0f);
-			v.Bitangent = glm::vec3(0.0f);
-		}
+		//if (mesh->mTangents && mesh->mBitangents)
+		//{
+		//	aiVector3D& tangent = mesh->mTangents[i];
+		//	v.Tangent = glm::vec3(tangent.x, tangent.y, tangent.z);
+		//	aiVector3D& bitangent = mesh->mBitangents[i];
+		//	v.Bitangent = glm::vec3(bitangent.x, bitangent.y, bitangent.z);
+		//}
+		//else {
+		//	v.Tangent = glm::vec3(0.0f);
+		//	v.Bitangent = glm::vec3(0.0f);
+		//}
+		
+		v.Tangent = glm::vec3(0.0f);
+		v.Bitangent = glm::vec3(0.0f);
 
 		//initialize bone data
 		//for (int j = 0; j < MAX_BONE_INFLUENCE; j++)
@@ -163,6 +215,9 @@ Mesh Model::processMesh(aiMesh* mesh)
 			indices.push_back(face.mIndices[j]);
 		}
 	}
+
+	// compute tangents and bitangents
+	computeTangentsBitangents(verts, indices);
 
 	// material textures
 	loadMaterialTextures(mesh, meshTextures);
@@ -244,10 +299,10 @@ void Model::loadMaterialTextures(aiMesh* mesh, std::vector<std::shared_ptr<Textu
 	aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
 	if (!material) return;
 
-	aiTextureType types[3] = { aiTextureType_DIFFUSE, aiTextureType_SPECULAR, aiTextureType_NORMALS }; //TODO add more?
-	string typeNames[3] = { "diffuseTexture", "specularTexture", "normalTexture" };
+	aiTextureType types[4] = { aiTextureType_DIFFUSE, aiTextureType_SPECULAR, aiTextureType_NORMALS, aiTextureType_EMISSIVE }; //TODO add more?
+	string typeNames[4] = { "diffuseTexture", "specularTexture", "normalTexture", "emissionTexture" };
 
-	for (int i = 0; i < 3; i++)
+	for (int i = 0; i < 4; i++)
 	{
 		aiTextureType type = types[i];
 		const string& typeName = typeNames[i];

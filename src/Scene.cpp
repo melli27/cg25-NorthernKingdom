@@ -10,7 +10,8 @@ Scene::Scene(Camera* cam)
 	terrain(nullptr),
 	backpack(nullptr),
 	lightCube(nullptr),
-	skybox(nullptr)
+	skybox(nullptr),
+	streetLight(nullptr)
 {
 }
 
@@ -21,6 +22,7 @@ Scene::~Scene() {
 	delete backpack;
 	delete lightCube;
 	delete skybox;
+	delete streetLight;
 }
 
 void Scene::init() {
@@ -39,17 +41,7 @@ void Scene::init() {
 	// Skybox shader
 	skyboxShader.createSkyboxShader();
 
-	// Setup Lights
-	lightManager->addDirectionalLight(dirLight);
-	lightManager->addPointLight(pointLight);
-	lightManager->applyToShader(lightingShader);
-	lightSpaceMatrix = lightManager->calculateLightSpaceMatrix();
-	shadowTransforms = lightManager->calculateShadowTransforms();
-
 	// Load Terrain / Models
-	lightCube = new Geometry(glm::translate(glm::mat4(1.0f), pointLight.position), Geometry::createCubeGeometry(0.2f, 0.2f, 0.2f));
-	//lightCube = new Geometry(glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f)), Geometry::createCubeGeometry(0.2f, 0.2f, 0.2f));
-
 	terrain = new Terrain(terrainShader, "assets/heightmap2.png");
 	camera->setTerrain(terrain);
 	camera->setHeightOffset(2.0f);
@@ -58,14 +50,14 @@ void Scene::init() {
 	tower = new Model("assets/models/Medieval tower/Medieval tower_High/Medieval tower_mid.dae", true);
 	castleGuard = new Model("assets/models/castle_guard/castle_guard.dae", true);
 	girl = new Model("assets/models/Peasant Girl/Peasant Girl.dae", true);
-
 	pavement = new Model("assets/models/pavement/pavement.obj", true);
+	streetLight = new Model("assets/models/Street Light/street_light.obj", true);
 	
 	// Set textures
 	tower->setTexture("assets/models/Medieval tower/Medieval tower_mid_Col.jpg", "assets/models/Medieval tower/Medieval tower_mid_spec.jpg", "assets/models/Medieval tower/Medieval tower_mid_Nor.jpg");
 
-	lamp = new Model("assets/models/lamp/lamp1.obj", true);
-	lamp->setTexture("assets/models/lamp/lamp1.png", nullptr, "assets/models/lamp/lamp1normal.jpg");
+	//lamp = new Model("assets/models/lamp/lamp1.obj", true);
+	//lamp->setTexture("assets/models/lamp/lamp1.png", nullptr, "assets/models/lamp/lamp1normal.jpg");
 	bigHouse = new Model("assets/models/small_building_1/small_building_1.dae", true);
 	
 	// Load Animations
@@ -82,7 +74,7 @@ void Scene::init() {
 	camera->position = glm::vec3(15.0f, terrainHeight + 10.0f, -2.0f);
 
 	// Setup Model Transforms
-	backpackModelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(8.0f, terrainHeight + 3.0, 22.0f));
+	backpackModelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(8.0f, terrainHeight + 4.0, 22.0f));
 	backpackModelMatrix = glm::scale(backpackModelMatrix, glm::vec3(0.3f));
 
 	houseMatrix = glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(11.0f, terrainHeight, 25.0f)), glm::vec3(1.5));
@@ -100,8 +92,8 @@ void Scene::init() {
 	bigHouseMatrix = glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(1.5, terrainHeight, 12.5)), glm::vec3(1.5));
 	bigHouseMatrix = glm::rotate(bigHouseMatrix, glm::radians(-90.0f), vec3(1.0, 0.0, 0.0));
 
-	lampMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(pointLight.position.x - 1.5, terrainHeight, pointLight.position.z));
-	lampMatrix = glm::rotate(lampMatrix, glm::radians(-90.0f), glm::vec3(0.0, 1.0, 0.0));
+	//lampMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(pointLight.position.x - 1.5, terrainHeight, pointLight.position.z));
+	//lampMatrix = glm::rotate(lampMatrix, glm::radians(-90.0f), glm::vec3(0.0, 1.0, 0.0));
 	towerMatrix = glm::rotate(glm::translate(glm::mat4(1.0f), glm::vec3(-11.0f, terrainHeight, 34.0f)), glm::radians(180.0f), vec3(0.0, 0.0, 1.0));
 	towerMatrix = glm::rotate(towerMatrix, glm::radians(90.0f), vec3(1.0, 0.0, 0.0));
 	
@@ -112,6 +104,18 @@ void Scene::init() {
 	pavementModelMatrix = glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, terrainHeight + 0.03f, 24.0f)), glm::vec3(6.0f));
 	pavementModelMatrix = glm::rotate(pavementModelMatrix, glm::radians(-20.0f), vec3(0.0, 1.0, 0.0));
 
+	streetLightModelMatrix = glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(5.0f, terrainHeight, 19.0f)), glm::vec3(1.5f));
+	glm::vec3 lightBulbLocal = glm::vec3(0.0f, 2.6f, 0.7f);
+	glm::vec3 lightBulbWorld = glm::vec3(streetLightModelMatrix * glm::vec4(lightBulbLocal, 1.0f));
+	pointLight.position = lightBulbWorld;
+
+	// Setup Lights
+	lightManager->addDirectionalLight(dirLight);
+	lightManager->addPointLight(pointLight);
+	lightManager->applyToShader(lightingShader);
+	lightSpaceMatrix = lightManager->calculateLightSpaceMatrix();
+	shadowTransforms = lightManager->calculateShadowTransforms();
+
 	// Setup Depthmap
 	depthmap = new Depthmap();
 	depthmap->initDepthmap();
@@ -120,7 +124,6 @@ void Scene::init() {
 	skybox = new Skybox();
 	skybox->init("assets/textures/sky");
 	std::cout << terrainHeight << endl;
-
 }
 
 void Scene::render(int window_width, int window_height, float deltaTime)
@@ -161,6 +164,14 @@ void Scene::render(int window_width, int window_height, float deltaTime)
 	depthShader.setUniformMatrix4fv("modelMatrix", 1, GL_FALSE, towerMatrix);
 	tower->draw(depthShader);
 
+	// Pavement depth
+	depthShader.setUniformMatrix4fv("modelMatrix", 1, GL_FALSE, pavementModelMatrix);
+	pavement->draw(depthShader);
+
+	// Streetlight depth
+	depthShader.setUniformMatrix4fv("modelMatrix", 1, GL_FALSE, streetLightModelMatrix);
+	streetLight->draw(depthShader);
+
 	// Guard depth
 	renderManager->setAnimated(depthShader, boneMatrices);
 	depthShader.setUniformMatrix4fv("modelMatrix", 1, GL_FALSE, castleGuardModelMatrix);
@@ -170,11 +181,6 @@ void Scene::render(int window_width, int window_height, float deltaTime)
 	renderManager->setAnimated(depthShader, boneMatrices2);
 	depthShader.setUniformMatrix4fv("modelMatrix", 1, GL_FALSE, girlMatrix);
 	girl->draw(depthShader);
-
-	//pavement depth
-	depthShader.setUniformMatrix4fv("modelMatrix", 1, GL_FALSE, pavementModelMatrix);
-	depthShader.setUniform("isAnimated", false);
-	pavement->draw(depthShader);
 
 	// 1. pass: render to depth cubemap
 	// --------------------------------
@@ -206,8 +212,16 @@ void Scene::render(int window_width, int window_height, float deltaTime)
 	tower->draw(pointDepthShader);
 
 	// Lantern
-	pointDepthShader.setUniformMatrix4fv("modelMatrix", 1, GL_FALSE, lampMatrix);
-	lamp->draw(pointDepthShader);
+	//pointDepthShader.setUniformMatrix4fv("modelMatrix", 1, GL_FALSE, lampMatrix);
+	//lamp->draw(pointDepthShader);
+
+	// Pavement depth
+	pointDepthShader.setUniformMatrix4fv("modelMatrix", 1, GL_FALSE, pavementModelMatrix);
+	pavement->draw(pointDepthShader);
+
+	// Streetlight depth
+	pointDepthShader.setUniformMatrix4fv("modelMatrix", 1, GL_FALSE, streetLightModelMatrix);
+	streetLight->draw(pointDepthShader);
 
 	// Guard depth
 	renderManager->setAnimated(pointDepthShader, boneMatrices);
@@ -218,10 +232,6 @@ void Scene::render(int window_width, int window_height, float deltaTime)
 	renderManager->setAnimated(pointDepthShader, boneMatrices2);
 	pointDepthShader.setUniformMatrix4fv("modelMatrix", 1, GL_FALSE, girlMatrix);
 	girl->draw(pointDepthShader);
-
-	// Pavement depth
-	pointDepthShader.setUniformMatrix4fv("modelMatrix", 1, GL_FALSE, pavementModelMatrix);
-	pavement->draw(pointDepthShader);
 
 	// 2. pass: render scene normally with shadow mapping
 	// --------------------------------------------------
@@ -235,7 +245,8 @@ void Scene::render(int window_width, int window_height, float deltaTime)
 	renderManager->renderShadedModel(bigHouse, lightingShader, bigHouseMatrix, cameraPos, viewProj, lightSpaceMatrix, false);
 	renderManager->renderShadedModel(tower, lightingShader, towerMatrix, cameraPos, viewProj, lightSpaceMatrix, false);
 	renderManager->renderShadedModel(pavement, lightingShader, pavementModelMatrix, cameraPos, viewProj, lightSpaceMatrix, false);
-	renderManager->renderShadedModel(lamp, lightingShader, lampMatrix, cameraPos, viewProj, lightSpaceMatrix, false);
+	//renderManager->renderShadedModel(lamp, lightingShader, lampMatrix, cameraPos, viewProj, lightSpaceMatrix, false);
+	renderManager->renderShadedModel(streetLight, lightingShader, streetLightModelMatrix, cameraPos, viewProj, lightSpaceMatrix, false);
 
 	renderManager->setAnimated(lightingShader, boneMatrices);
 	renderManager->renderShadedModel(castleGuard, lightingShader, castleGuardModelMatrix, cameraPos, viewProj, lightSpaceMatrix, true);
@@ -256,5 +267,6 @@ void Scene::render(int window_width, int window_height, float deltaTime)
 	renderManager->renderTerrain(terrain, terrainShader, terrainModelMatrix, view, projection, depthmap->getDepthMapTextureID(), lightSpaceMatrix, terrainParams);
 
 	// Render skybox
+	skybox->draw(skyboxShader, view, projection);
 	skybox->draw(skyboxShader, view, projection);
 }

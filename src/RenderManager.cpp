@@ -49,11 +49,12 @@ void RenderManager::renderShadedModel(Model* model, Shader& shader, const glm::m
 	shader.setUniform("isAnimated", isAnimated);
 
 	shader.setUniformMatrix4fv("lightSpaceMatrix", 1, GL_FALSE, lightspaceMatrix);
-	shader.setUniform("shadowMap", 3);
-	shader.setUniform("pointShadowMap", 4);
+	shader.setUniform("shadowMap", 10);
+	shader.setUniform("pointShadowMap", 11);
 	shader.setUniform("farPlane", 25.0f);//TODO get from lightmanager pointfarplane
 
 	shader.setUniform("pointLightOn", InputManager::getPointLightMode() ? 1 : 0);
+	shader.setUniform("normalMappingOn", InputManager::getNormalMappingMode() ? 1 : 0);
 
 	model->draw(shader);
 	

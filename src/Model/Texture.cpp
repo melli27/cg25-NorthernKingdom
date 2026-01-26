@@ -42,6 +42,10 @@ void Texture::loadSTBI(const char* filepath) {
 		else if (nrChannels == 4) format = GL_RGBA;
 
 		glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+		if (nrChannels == 1) {
+			GLint swizzleMask[] = { GL_RED, GL_RED, GL_RED, GL_ONE };
+			glTexParameteriv(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_RGBA, swizzleMask);
+		}
 		glGenerateMipmap(GL_TEXTURE_2D);
 
 		std::cout << "Loaded texture from: " << filepath << " size: " << height << "x" << width

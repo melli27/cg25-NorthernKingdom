@@ -16,6 +16,7 @@ public:
     static void framebufferSizeCallback(GLFWwindow* window, int width, int height);
 
 	static bool getPointLightMode();
+	static bool getNormalMappingMode();
 
 private:
     Camera* camera;
@@ -29,6 +30,8 @@ private:
 
 	static bool pointLightMode;
 	static bool pointLightKeyPressed;
+    static bool normalMappingMode;
+	static bool normalMappingKeyPressed;
 
     bool recordPathMode = false;
 	bool recordPathKeyPressed = false;

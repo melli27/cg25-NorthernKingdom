@@ -81,6 +81,9 @@
     <image id="city_house_2_Col_jpg" name="city_house_2_Col_jpg">
       <init_from>city_house_2_Col.jpg</init_from>
     </image>
+    <image id="city_house_2_Spec_jpg" name="city_house_2_Spec_jpg">
+      <init_from>city_house_2_Spec.jpg</init_from>
+    </image>
     <image id="city_house_2_Nor_jpg" name="city_house_2_Nor_jpg">
       <init_from>city_house_2_Nor.jpg</init_from>
     </image>
@@ -96,6 +99,16 @@
         <newparam sid="city_house_2_Col_jpg-sampler">
           <sampler2D>
             <source>city_house_2_Col_jpg-surface</source>
+          </sampler2D>
+        </newparam>
+        <newparam sid="city_house_2_Spec_jpg-surface">
+          <surface type="2D">
+            <init_from>city_house_2_Spec_jpg</init_from>
+          </surface>
+        </newparam>
+        <newparam sid="city_house_2_Spec_jpg-sampler">
+          <sampler2D>
+            <source>city_house_2_Spec_jpg-surface</source>
           </sampler2D>
         </newparam>
         <newparam sid="city_house_2_Nor_jpg-surface">
@@ -120,7 +133,7 @@
               <texture texture="city_house_2_Col_jpg-sampler" texcoord="UV"/>
             </diffuse>
             <specular>
-              <color sid="specular">0.4869723 0.4151203 0.2987725 1</color>
+              <texture texture="city_house_2_Spec_jpg-sampler" texcoord="UV"/>
             </specular>
             <shininess>
               <float sid="shininess">50</float>
