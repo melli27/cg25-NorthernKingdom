@@ -49,6 +49,7 @@ void Scene::init() {
 	pavement = new Model("assets/models/pavement/pavement.obj", true);
 	streetLight = new Model("assets/models/Street Light/street_light.obj", true);
 	bigHouse = new Model("assets/models/small_building_1/small_building_1.dae", true);
+	hangingSign = new Model("assets/models/hanging_sign/hanging_sign.obj", true);
 	
 	// Set textures
 	tower->setTexture("assets/models/Medieval tower/Medieval tower_mid_Col.jpg", "assets/models/Medieval tower/Medieval tower_mid_spec.jpg", "assets/models/Medieval tower/Medieval tower_mid_Nor.jpg");
@@ -72,6 +73,7 @@ void Scene::init() {
 	addModel(castleGuard, vec3(-5.48f, 0.0f, 33.245f), vec3(1.6f), vec3(0.0f, 150.0f, 0.0f), false, animator, true);
 	addModel(girl, vec3(0.0f, 0.0f, 20.0f), vec3(1.6f), vec3(0.0f, 0.0f, 0.0f), false, animator2, true);
 	addModel(streetLight, vec3(5.8f, 0.0f, 18.9f), vec3(1.5f), vec3(0.0f, -34.0f, 0.0f));
+	addModel(hangingSign, vec3(8.98f, 4.75f, 21.08f), vec3(0.7f), vec3(0.0f, 0.0f, 0.0f));
 	
 	streetLightModelMatrix = sceneObjects[9].transform;
 	glm::vec3 lightBulbLocal = glm::vec3(0.0f, 2.6f, 0.7f);

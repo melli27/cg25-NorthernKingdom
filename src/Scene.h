@@ -75,6 +75,7 @@ private:
     Model* lamp;
     Model* pavement;
     Model* streetLight;
+    Model* hangingSign;
     Geometry* lightCube;
     Geometry* testCube;
     Skybox* skybox;
