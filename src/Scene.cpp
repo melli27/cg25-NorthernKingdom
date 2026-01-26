@@ -58,8 +58,6 @@ void Scene::init() {
 	castleGuard->setTexture("assets/models/castle_guard/textures/Guard_02__diffuse.png", "assets/models/castle_guard/textures/Guard_02__specular.png", "assets/models/castle_guard/textures/Guard_02__normal.png");
 	girl->setTexture("assets/models/Peasant Girl/textures/Peasant_Girl_diffuse.png", "assets/models/Peasant Girl/textures/Peasant_Girl_specular.png", "assets/models/Peasant Girl/textures/Peasant_Girl_normal.png");
 
-	//lamp = new Model("assets/models/lamp/lamp1.obj", true);
-	//lamp->setTexture("assets/models/lamp/lamp1.png", nullptr, "assets/models/lamp/lamp1normal.jpg");
 	bigHouse = new Model("assets/models/small_building_1/small_building_1.dae", true);
 	
 	// Load Animations
@@ -94,8 +92,6 @@ void Scene::init() {
 	bigHouseMatrix = glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(1.5, terrainHeight, 12.5)), glm::vec3(1.5));
 	bigHouseMatrix = glm::rotate(bigHouseMatrix, glm::radians(-90.0f), vec3(1.0, 0.0, 0.0));
 
-	//lampMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(pointLight.position.x - 1.5, terrainHeight, pointLight.position.z));
-	//lampMatrix = glm::rotate(lampMatrix, glm::radians(-90.0f), glm::vec3(0.0, 1.0, 0.0));
 	towerMatrix = glm::rotate(glm::translate(glm::mat4(1.0f), glm::vec3(-11.0f, terrainHeight, 34.0f)), glm::radians(180.0f), vec3(0.0, 0.0, 1.0));
 	towerMatrix = glm::rotate(towerMatrix, glm::radians(90.0f), vec3(1.0, 0.0, 0.0));
 	
@@ -213,10 +209,6 @@ void Scene::render(int window_width, int window_height, float deltaTime)
 	pointDepthShader.setUniformMatrix4fv("modelMatrix", 1, GL_FALSE, towerMatrix);
 	tower->draw(pointDepthShader);
 
-	// Lantern
-	//pointDepthShader.setUniformMatrix4fv("modelMatrix", 1, GL_FALSE, lampMatrix);
-	//lamp->draw(pointDepthShader);
-
 	// Pavement depth
 	pointDepthShader.setUniformMatrix4fv("modelMatrix", 1, GL_FALSE, pavementModelMatrix);
 	pavement->draw(pointDepthShader);
@@ -247,7 +239,6 @@ void Scene::render(int window_width, int window_height, float deltaTime)
 	renderManager->renderShadedModel(bigHouse, lightingShader, bigHouseMatrix, cameraPos, viewProj, lightSpaceMatrix, false);
 	renderManager->renderShadedModel(tower, lightingShader, towerMatrix, cameraPos, viewProj, lightSpaceMatrix, false);
 	renderManager->renderShadedModel(pavement, lightingShader, pavementModelMatrix, cameraPos, viewProj, lightSpaceMatrix, false);
-	//renderManager->renderShadedModel(lamp, lightingShader, lampMatrix, cameraPos, viewProj, lightSpaceMatrix, false);
 	renderManager->renderShadedModel(streetLight, lightingShader, streetLightModelMatrix, cameraPos, viewProj, lightSpaceMatrix, false);
 
 	renderManager->setAnimated(lightingShader, boneMatrices);

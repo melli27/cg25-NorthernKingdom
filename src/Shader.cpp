@@ -5,41 +5,6 @@
 
 using namespace std;
 
-
-void Shader::createSimpleShader()
-{
-	shader = glCreateProgram();
-	GLuint vertexShader = compileShader(GL_VERTEX_SHADER, "src/Shader/vertex.shader");
-	GLuint fragmentShader = compileShader(GL_FRAGMENT_SHADER, "src/Shader/fragment.shader");
-
-	glAttachShader(shader, vertexShader);
-	glAttachShader(shader, fragmentShader);
-	glLinkProgram(shader);
-	glValidateProgram(shader);
-
-	ID = shader;
-
-	glDeleteShader(vertexShader);
-	glDeleteShader(fragmentShader);
-}
-
-void Shader::createNormalShader()
-{
-	shader = glCreateProgram();
-	GLuint vertexShader = compileShader(GL_VERTEX_SHADER, "src/Shader/normal_vert.shader");
-	GLuint fragmentShader = compileShader(GL_FRAGMENT_SHADER, "src/Shader/normal_frag.shader");
-
-	glAttachShader(shader, vertexShader);
-	glAttachShader(shader, fragmentShader);
-	glLinkProgram(shader);
-	glValidateProgram(shader);
-
-	ID = shader;
-
-	glDeleteShader(vertexShader);
-	glDeleteShader(fragmentShader);
-}
-
 void Shader::createLightingShader()
 {
 	shader = glCreateProgram();
