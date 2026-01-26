@@ -8,6 +8,7 @@ Model::Model(string const& path, bool flipUVs)
 void Model::draw(Shader& shader)
 {
 	for (unsigned int i = 0; i < modelMeshes.size(); i++) {
+		
 		modelMeshes[i].Draw(shader);
 	}
 }
@@ -34,8 +35,6 @@ void Model::setTexture(const char* diffusePath, const char* specularPath, const 
 		normal->type = "normalTexture";
 		newTextures.push_back(normal);
 	}
-
-	// Setze die neuen Texturen für alle Meshes
 	for (unsigned int i = 0; i < modelMeshes.size(); i++) {
 		modelMeshes[i].textures = newTextures;
 	}

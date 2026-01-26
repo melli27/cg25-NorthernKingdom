@@ -23,7 +23,6 @@ uniform sampler2D snowNormal;
 uniform vec3 lightDir;
 uniform vec3 viewPos;
 
-
 out vec4 FragColor;
 
 float ShadowCalculation(vec4 fragPosLightSpace) {
@@ -44,13 +43,13 @@ float ShadowCalculation(vec4 fragPosLightSpace) {
 
 void computeWeights(float height, out float wGrass, out float wRock, out float wSnow)
 {
-    // Gras on bottom
-    float g = 1.0 - smoothstep(0.12, 0.19, height); // 0.12–0.1ß Übergangszone
+    // Grass at bottom
+    float g = 1.0 - smoothstep(0.12, 0.19, height); // 0.12-0.19 Uebergangszone
     
-    // Snow on top
+    // Snow at top
     float s = smoothstep(0.20, 0.35, height);
     
-    // Rock in between
+    // Rock in the middle
     float r = 1.0 - g - s;
     
     float sum = g + r + s + 0.0001;

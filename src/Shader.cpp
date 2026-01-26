@@ -6,7 +6,7 @@
 using namespace std;
 
 
-void Shader::createSimpleShader()
+Shader Shader::createSimpleShader()
 {
 	shader = glCreateProgram();
 	GLuint vertexShader = compileShader(GL_VERTEX_SHADER, "src/Shader/vertex.shader");
@@ -21,6 +21,8 @@ void Shader::createSimpleShader()
 
 	glDeleteShader(vertexShader);
 	glDeleteShader(fragmentShader);
+
+	return *this;
 }
 
 void Shader::createNormalShader()

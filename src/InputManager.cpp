@@ -1,5 +1,5 @@
-// InputManager.cpp
 #include "InputManager.h"
+#include "Scene.h"
 
 bool InputManager::pointLightMode = true;
 bool InputManager::pointLightKeyPressed = false;
@@ -28,6 +28,48 @@ void InputManager::processInput(GLFWwindow* window, float deltaTime)
 
 	if (!camera) return;
 
+	// Rotate nearest Object
+	if (scene) {
+
+		if(glfwGetKey(window, GLFW_KEY_TAB) == GLFW_PRESS && !tabKeyPressed) {
+			tabKeyPressed = true;
+			currentMode = (currentMode == ROTATE) ? TRANSLATE : ROTATE;
+			std::cout << "Transform mode: " << ((currentMode == ROTATE) ? "ROTATE" : "TRANSLATE") << std::endl;
+		}else if (glfwGetKey(window, GLFW_KEY_TAB) == GLFW_RELEASE) {
+			tabKeyPressed = false;
+		}
+		// Right arrow, translate x axis
+		if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
+			scene->translateNearestObj(transformSpeed * deltaTime, glm::vec3(1,0,0), currentMode);
+		// Left arrow, translate -x axis
+		if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
+			scene->translateNearestObj(-(transformSpeed * deltaTime), glm::vec3(1,0,0), currentMode);
+		// Up arrow, translate z axis
+		if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
+			scene->translateNearestObj(transformSpeed * deltaTime, glm::vec3(0,0,1), currentMode);
+		// Down arrow, translate -z axis
+		if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
+			scene->translateNearestObj(-(transformSpeed * deltaTime), glm::vec3(0,0,1), currentMode);
+		// K, translate +y axis
+		if (glfwGetKey(window, GLFW_KEY_K) == GLFW_PRESS)
+			scene->translateNearestObj((transformSpeed * deltaTime), glm::vec3(0,1,0), currentMode);
+		// M, translate -y axis
+		if (glfwGetKey(window, GLFW_KEY_M) == GLFW_PRESS)
+			scene->translateNearestObj(-(transformSpeed * deltaTime), glm::vec3(0,1,0), currentMode);
+
+		if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS && !pPressed) {
+			pPressed = true;
+			glm::vec3 pos = scene->getPositionOfLastObject();
+			glm::vec3 rot = scene->getRotationOfLastObject();
+			std::cout << "Position: x=" << pos.x << " y=" << pos.y << " z=" << pos.z << std::endl;
+			std::cout << "Rotation: x=" << rot.x << " y=" << rot.y << " z=" << rot.z << std::endl;
+		}
+		if(glfwGetKey(window, GLFW_KEY_P) == GLFW_RELEASE) {
+			pPressed = false;
+		}
+	}
+
+	// Camera controls
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
 		camera->move(FORWARD, deltaTime);
 	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
@@ -36,9 +78,6 @@ void InputManager::processInput(GLFWwindow* window, float deltaTime)
 		camera->move(LEFT, deltaTime);
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
 		camera->move(RIGHT, deltaTime);
-
-	if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS)
-		std::cout << camera->position.x << " " << camera->position.z << std::endl;
 
 	// Space toggle Wireframe
 	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS && !polygonKeyPressed)
@@ -75,12 +114,12 @@ void InputManager::processInput(GLFWwindow* window, float deltaTime)
 	}
 
 	// Camera path recording toggle
-	if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS && !recordPathKeyPressed)
+	if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS && !recordPathKeyPressed)
 	{
 		recordPathKeyPressed = true;
 		toggleCameraRecording();
 	}
-	if (glfwGetKey(window, GLFW_KEY_P) == GLFW_RELEASE)
+	if (glfwGetKey(window, GLFW_KEY_R) == GLFW_RELEASE)
 	{
 		recordPathKeyPressed = false;
 	}
@@ -121,12 +160,32 @@ void InputManager::processInput(GLFWwindow* window, float deltaTime)
 		}
 		return;
 	}
+
+	// Set Fullscreen
+	if (glfwGetKey(window, GLFW_KEY_F11) == GLFW_PRESS) {
+		fKeyPressed = true;
+		if (!fullscreen) {
+			fullscreen = true;
+			glfwGetWindowSize(window, &old_window_width, &old_window_height);
+			glfwGetWindowPos(window, &old_window_x, &old_window_y);
+			GLFWmonitor* monitor = glfwGetPrimaryMonitor();
+			const GLFWvidmode* mode = glfwGetVideoMode(monitor);
+			glfwSetWindowMonitor(window, monitor, 0, 0, mode->width, mode->height, mode->refreshRate);
+			//glfwSetWindowSize(window, mode->width, mode->height);
+		}
+		else {
+			fullscreen = false;
+			glfwSetWindowMonitor(window, nullptr, old_window_x, old_window_y, old_window_width, old_window_height, GLFW_DONT_CARE);
+		}
+	}
+	else if (glfwGetKey(window, GLFW_KEY_F11) == GLFW_RELEASE) {
+		fKeyPressed = false;
+	}
 }
 
 
 InputManager* InputManager::getInputManager(GLFWwindow* window)
 {
-	// Wir nutzen die Window User Pointer, um InputManager zu holen
 	return static_cast<InputManager*>(glfwGetWindowUserPointer(window));
 }
 
@@ -160,6 +219,15 @@ void InputManager::scrollCallback(GLFWwindow* window, double xoffset, double yof
 	if (!input || !input->camera) return;
 
 	input->camera->zoom(static_cast<float>(yoffset));
+}
+
+void InputManager::framebufferSizeCallback(GLFWwindow* window, int width, int height)
+{
+	glViewport(0, 0, width, height);
+	InputManager* input = getInputManager(window);
+	if (input && input->camera) {
+		input->camera->aspectRatio = (float)width / (float)height;
+	}
 }
 
 bool InputManager::getPointLightMode()
