@@ -16,7 +16,7 @@ public:
     Shader();
     ~Shader();
 
-    void createSimpleShader();
+    Shader createSimpleShader();
     void createNormalShader();
     void createLightingShader();
 	void createLightSourceShader();

@@ -1,4 +1,3 @@
-// Scene.h
 #pragma once
 #include "Shader.h"
 #include "Model/Model.h"
@@ -10,43 +9,60 @@
 #include <Depthmap.h>
 #include <Skybox/Skybox.h>
 #include <Animator.h>
+#include <InputManager.h>
 
-struct RenderObject {
+struct SceneObject {
     Model* model;
-    glm::mat4 modelMatrix;
-    Shader shader;
+    mat4 transform = glm::mat4(1.0f);
+    vec3 pos = vec3(0.0f);
+    vec3 rotation = vec3(0.0f);
+    vec3 scale = vec3(1.0f);
+	bool isAnimated = false;
+    Animator* animator; // Optional; nullptr if not animated
+    std::vector<mat4>* boneMatrices; // Optional; empty if not animated
+	bool movable = true;
 };
 
 class Scene {
 public:
     Scene(Camera* camera);
-	~Scene();
+    ~Scene();
 
     void init();
     void render(int window_width, int window_height, float deltaTime);
-    void update(float deltaTime);
+    
+    void addModel(Model* model, glm::vec3 pos, glm::vec3 scale, vec3 rotate, bool movable = true, Animator* animator = nullptr, bool isAnimated = false);
 
+	void translateNearestObj(float amount, glm::vec3 axis, TransformMode transformMode);
+
+	glm::vec3 getPositionOfLastObject();
+
+	glm::vec3 getRotationOfLastObject();
+
+    glm::vec3 extractEulerAngles(const glm::mat4& m);
+    
 private:
     Camera* camera;
 
     RenderManager* renderManager;
-	LightManager* lightManager;
+    LightManager* lightManager;
+
+    vector <SceneObject> sceneObjects;
+	int nearestObjIndex = -1;
 
     Shader lightSourceShader;
     Shader lightingShader;
     Shader lightingShader2;
     Shader depthShader;
-	Shader pointDepthShader;
-	Shader skyboxShader;
+    Shader pointDepthShader;
+    Shader skyboxShader;
 
     Shader terrainShader;
     Shader animatedModelShader;
 
-	mat4 lightSpaceMatrix;
-	vector<mat4> shadowTransforms;
-	Depthmap* depthmap;
-
-    vector<RenderObject> renderObjects;
+    mat4 lightSpaceMatrix;
+    vector<mat4> shadowTransforms;
+    Depthmap* depthmap;
 
     Terrain* terrain;
     Model* backpack;
@@ -54,25 +70,25 @@ private:
     Model* bench;
     Model* house;
     Model* tower;
-	Model* castleGuard;
+    Model* castleGuard;
     Model* girl;
     Model* lamp;
     Model* pavement;
     Model* streetLight;
     Geometry* lightCube;
     Geometry* testCube;
-	Skybox* skybox;
+    Skybox* skybox;
 
-	Animation* castleGuardAnimation;
+    Animation* castleGuardAnimation;
     Animator* animator;
 
-	Animation* catwalk;
+    Animation* catwalk;
     Animator* animator2;
 
     glm::mat4 backpackModelMatrix;
-	glm::mat4 castleGuardModelMatrix;
-	glm::mat4 girlMatrix;
-	glm::mat4 benchMatrix;
+    glm::mat4 castleGuardModelMatrix;
+    glm::mat4 girlMatrix;
+    glm::mat4 benchMatrix;
     glm::mat4 terrainModelMatrix;
     glm::mat4 houseMatrix;
     glm::mat4 houseMatrix2;
@@ -99,4 +115,6 @@ private:
         glm::vec3(1.0f, 1.0f, 1.0f),    // color?
         glm::vec3(1.0f, 0.09f, 0.032f)  // attenuation
     };
+
+    void initModels();
 };

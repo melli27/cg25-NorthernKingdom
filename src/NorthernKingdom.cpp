@@ -70,7 +70,7 @@ int main()
 	glfwSetWindowUserPointer(window, &inputManager);
 	glfwSetCursorPosCallback(window, InputManager::mouseCallback);
 	glfwSetScrollCallback(window, InputManager::scrollCallback);
-	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+	glfwSetFramebufferSizeCallback(window, InputManager::framebufferSizeCallback);
 	//glfwSetKeyCallback(window, keyCallback);
 
 
@@ -79,17 +79,19 @@ int main()
 	Scene scene(&camera);
 	scene.init();
 
+	inputManager.setScene(&scene);
 
 	// -----------
 	// render loop
 	// -----------
 	while (!glfwWindowShouldClose(window))
 	{
+		inputManager.processInput(window, deltaTime);
+
+		glfwGetWindowSize(window, &window_width, &window_height);
 		float currentFrame = (float)glfwGetTime();
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
-
-		inputManager.processInput(window, deltaTime);
 
 		// render
 		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);

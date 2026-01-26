@@ -21,37 +21,32 @@ void main()
     
     if (gl_InvocationID == 0)
     {
-        // Berechne World-Space Positionen der 4 Patch-Eckpunkte
-        vec4 worldPos00 = model * gl_in[0].gl_Position;
-        vec4 worldPos01 = model * gl_in[1].gl_Position;
-        vec4 worldPos10 = model * gl_in[2].gl_Position;
-        vec4 worldPos11 = model * gl_in[3].gl_Position;
-        
-        // Distanz von jedem Eckpunkt zur Kamera
-        float distance00 = distance(worldPos00.xyz, cameraPos);
-        float distance01 = distance(worldPos01.xyz, cameraPos);
-        float distance10 = distance(worldPos10.xyz, cameraPos);
-        float distance11 = distance(worldPos11.xyz, cameraPos);
-        
-        // Normalisiere Distanzen auf [0,1] für mix
-        float t00 = clamp((distance00 - minDistance) / (maxDistance - minDistance), 0.0, 1.0);
-        float t01 = clamp((distance01 - minDistance) / (maxDistance - minDistance), 0.0, 1.0);
-        float t10 = clamp((distance10 - minDistance) / (maxDistance - minDistance), 0.0, 1.0);
-        float t11 = clamp((distance11 - minDistance) / (maxDistance - minDistance), 0.0, 1.0);
-        
-        vec3 center = (worldPos00.xyz + worldPos01.xyz + worldPos10.xyz + worldPos11.xyz) * 0.25;
-        float d = distance(center, cameraPos);
-        float t = clamp((d - minDistance) / (maxDistance - minDistance), 0.0, 1.0);
-        float tess = mix(maxTessLevel, minTessLevel, t);
+        // Transform vertex to eye space/world pos
+        vec4 eyespacePos00 = view * model * gl_in[0].gl_Position;
+        vec4 eyespacePos01 = view * model * gl_in[1].gl_Position;
+        vec4 eyespacePos10 = view * model * gl_in[2].gl_Position;
+        vec4 eyespacePos11 = view * model * gl_in[3].gl_Position;
 
-        // Setze Outer-Levels
-        gl_TessLevelOuter[0] = tess;
-        gl_TessLevelOuter[1] = tess;
-        gl_TessLevelOuter[2] = tess;
-        gl_TessLevelOuter[3] = tess;
+        // Normaized distance to camera scaled [0,1]
+        float dist00 = clamp((abs(eyespacePos00.z) - minDistance) / (maxDistance - minDistance), 0.0, 1.0);
+        float dist01 = clamp((abs(eyespacePos01.z) - minDistance) / (maxDistance - minDistance), 0.0, 1.0);
+        float dist10 = clamp((abs(eyespacePos10.z) - minDistance) / (maxDistance - minDistance), 0.0, 1.0);
+        float dist11 = clamp((abs(eyespacePos11.z) - minDistance) / (maxDistance - minDistance), 0.0, 1.0);
         
-        // Inner-Levels: Maximum der gegenüberliegenden Kanten
-        gl_TessLevelInner[0] = tess;
-        gl_TessLevelInner[1] = tess;
+        // Intepolate edge tesselation levels based on distance (closser vertex)
+        float t0 = mix(maxTessLevel, minTessLevel, min(dist10, dist00));
+        float t1 = mix(maxTessLevel, minTessLevel, min(dist00, dist01));
+        float t2 = mix(maxTessLevel, minTessLevel, min(dist01, dist11));
+        float t3 = mix(maxTessLevel, minTessLevel, min(dist11, dist10));
+
+        // Outer Levels
+        gl_TessLevelOuter[0] = t0;
+        gl_TessLevelOuter[1] = t1;
+        gl_TessLevelOuter[2] = t2;
+        gl_TessLevelOuter[3] = t3;
+        
+        // Inner Levels
+        gl_TessLevelInner[0] = max(t1, t3);
+        gl_TessLevelInner[1] = max(t0, t2);
     }
 }
