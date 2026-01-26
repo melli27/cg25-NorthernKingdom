@@ -55,6 +55,8 @@ void Scene::init() {
 	
 	// Set textures
 	tower->setTexture("assets/models/Medieval tower/Medieval tower_mid_Col.jpg", "assets/models/Medieval tower/Medieval tower_mid_spec.jpg", "assets/models/Medieval tower/Medieval tower_mid_Nor.jpg");
+	castleGuard->setTexture("assets/models/castle_guard/textures/Guard_02__diffuse.png", "assets/models/castle_guard/textures/Guard_02__specular.png", "assets/models/castle_guard/textures/Guard_02__normal.png");
+	girl->setTexture("assets/models/Peasant Girl/textures/Peasant_Girl_diffuse.png", "assets/models/Peasant Girl/textures/Peasant_Girl_specular.png", "assets/models/Peasant Girl/textures/Peasant_Girl_normal.png");
 
 	//lamp = new Model("assets/models/lamp/lamp1.obj", true);
 	//lamp->setTexture("assets/models/lamp/lamp1.png", nullptr, "assets/models/lamp/lamp1normal.jpg");
