@@ -62,16 +62,16 @@ void Scene::init() {
 	animator2 = new Animator(catwalk);
 
 	// Save models
-	addModel(backpack, glm::vec3(9.0f, 3.0, 21.0f), glm::vec3(0.3f), vec3(1.5708, -1.5708, 0.0));
-	addModel(house, vec3(13.6365f, 0.2f, 23.45f), vec3(1.5f), vec3(-90.0f, -93.0, 0.0));
-	addModel(house, vec3(5.0f, 0.0f, 30.0f), vec3(1.5f), vec3(-90.0f, -160.0f, 0.0));
+	addModel(backpack, glm::vec3(-9.21f, 0.6f, 19.75f), glm::vec3(0.3f), vec3(1.5708f, 4.46486f, 0.0f));
+	addModel(house, vec3(11.8f, 0.2f, 23.45f), vec3(1.5f), vec3(-90.0f, -93.0f, 0.0f));
+	addModel(house, vec3(5.0f, 0.0f, 30.0f), vec3(1.5f), vec3(-90.0f, -160.0f, 0.0f));
 	addModel(house, vec3(-10.7f, 0.0f, 16.6f), vec3(1.5f), vec3(-90.0f, -300.0f, 0.0f));
 	addModel(bigHouse, vec3(1.5f, 0.0f, 12.5f), vec3(1.5f), vec3(-90.0f, 0.0f, 0.0f));
 	addModel(tower, vec3(-11.0f, 0.0f, 34.0f), vec3(1.0f), vec3(-90.0f, -202.0f, 0.0f));
 	addModel(pavement, vec3(0.0f, 0.03f, 24.0f), vec3(6.0f), vec3(0.0f, 0.0f, 0.0f), false);
 	addModel(castleGuard, vec3(-5.48f, 0.0f, 33.245f), vec3(1.6f), vec3(0.0f, 150.0f, 0.0f), false, animator, true);
 	addModel(girl, vec3(0.0f, 0.0f, 20.0f), vec3(1.6f), vec3(0.0f, 0.0f, 0.0f), false, animator2, true);
-	addModel(streetLight, vec3(5.0f, 0.0f, 19.0f), vec3(1.5f), vec3(0.0f, 0.0f, 0.0f));
+	addModel(streetLight, vec3(5.8f, 0.0f, 18.9f), vec3(1.5f), vec3(0.0f, -34.0f, 0.0f));
 	
 	streetLightModelMatrix = sceneObjects[9].transform;
 	glm::vec3 lightBulbLocal = glm::vec3(0.0f, 2.6f, 0.7f);
