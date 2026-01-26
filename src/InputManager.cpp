@@ -16,10 +16,6 @@ InputManager::InputManager(Camera* camera) : camera(camera)
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		glDisable(GL_CULL_FACE);
 	}
-
-	if (camera && camera->readRecordedCameraPath("recordedCameraPath.txt")) {
-		camera->startPlayback(glfwGetTime());
-	}
 }
 
 void InputManager::processInput(GLFWwindow* window, float deltaTime)

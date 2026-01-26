@@ -79,6 +79,11 @@ int main()
 	Scene scene(&camera);
 	scene.init();
 
+	// start automatic camera after everything is loaded
+	if (camera.readRecordedCameraPath("recordedCameraPath.txt")) {
+		camera.startPlayback(glfwGetTime());
+	}
+
 	inputManager.setScene(&scene);
 
 	// -----------
