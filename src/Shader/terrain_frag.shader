@@ -47,7 +47,7 @@ void computeWeights(float height, out float wGrass, out float wRock, out float w
     float g = 1.0 - smoothstep(0.22, 0.29, height); // 0.12-0.19 Uebergangszone
     
     // Snow at top
-    float s = smoothstep(0.50, 0.60, height);
+    float s = smoothstep(0.40, 0.65, height);
     
     // Rock in the middle
     float r = 1.0 - g - s;
