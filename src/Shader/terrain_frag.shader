@@ -20,6 +20,13 @@ uniform sampler2D grassNormal;
 uniform sampler2D snowDiffuse;
 uniform sampler2D snowNormal;
 
+// Brick
+uniform sampler2D brickDiffuse;
+uniform sampler2D brickNormal;
+
+// Path
+uniform sampler2D path;
+
 uniform vec3 lightDir;
 uniform vec3 viewPos;
 
@@ -44,10 +51,10 @@ float ShadowCalculation(vec4 fragPosLightSpace) {
 void computeWeights(float height, out float wGrass, out float wRock, out float wSnow)
 {
     // Grass at bottom
-    float g = 1.0 - smoothstep(0.3, 0.42, height); // 0.12-0.19 Uebergangszone
+    float g = 1.0 - smoothstep(0.32, 0.38, height); // 0.12-0.19 Uebergangszone 0.3 - 0.42
     
     // Snow at top
-    float s = smoothstep(0.65, 0.75, height);
+    float s = smoothstep(0.60, 0.70, height);
     
     // Rock in the middle
     float r = 1.0 - g - s;
@@ -73,6 +80,12 @@ void main()
     vec3 colSnow  = texture(snowDiffuse,  uv).rgb;
 
     vec3 color = colGrass * wGrass + colRock * wRock + colSnow * wSnow;
+
+    //float pathWeight = texture(path, TexCoord).r;
+    //if(pathWeight > 0.0){
+    //    vec3 colBrick = texture(brickDiffuse, uv).rgb;
+    //    color = colBrick;
+    //}
 
     float shadow = ShadowCalculation(FragPosLightSpace);
     vec3 finalColor = color * (1.0 - shadow * 0.3); // Darken color in shadow

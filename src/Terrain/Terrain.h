@@ -19,6 +19,7 @@ private:
 	//TODO maybe shift in mesh.h
 	Texture heightMapTexture;
 	Texture surfaceTexture;
+	Texture pathTexture;
 
 	Texture rockDiffuse;
 	Texture rockNormal;
@@ -28,6 +29,9 @@ private:
 
 	Texture snowDiffuse;
 	Texture snowNormal;
+
+	Texture brickDiffuse;
+	Texture brickNormal;
 
 	vector<float> vertices;
 	unsigned int VAO, VBO;

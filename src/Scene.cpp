@@ -35,7 +35,7 @@ void Scene::init() {
 	skyboxShader.createSkyboxShader();
 
 	// Load Terrain / Models
-	terrain = new Terrain(terrainShader, "assets/hm.png");
+	terrain = new Terrain(terrainShader, "assets/hm9.png");
 	camera->setTerrain(terrain);
 	camera->setHeightOffset(2.0f);
 	camera->position = glm::vec3(15.0f, terrain->getHeightAt(15.0, -2) + 10.0f, -2.0f);

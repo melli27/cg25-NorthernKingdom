@@ -4,9 +4,14 @@ Terrain::Terrain(Shader& shader, const char* heightMapPath)
 {
 	shader.activate();
 
+	//HeightMap
 	heightMapTexture.loadFromFile(heightMapPath);
 	heightMapTexture.bind(0);
 	shader.setUniform("heightMap", 0);
+
+	//Path
+	pathTexture.loadFromFile("assets/path3.png");
+	shader.setUniform("path", 8);
 
 	//Rock
 	rockDiffuse.loadFromFile("assets/textures/rock/rock_diffuse.dds"); //TODO increase loading speed (lower pic quality or no normal or rgb only)
@@ -28,6 +33,13 @@ Terrain::Terrain(Shader& shader, const char* heightMapPath)
 
 	snowNormal.loadFromFile("assets/textures/snow/snow_normal.dds");
 	shader.setUniform("snowNormal", 6);
+
+	// Brick
+	brickDiffuse.loadFromFile("assets/models/pavement/color.jpg");
+	shader.setUniform("brickDiffuse",9);
+
+	brickNormal.loadFromFile("assets/models/pavement/normal.jpg");
+	shader.setUniform("brickNormal", 10);
 
 	shader.setUniform("lightDir", glm::vec3(1.0f, 1.0f, 1.0f));
 	shader.setUniform("viewPos", glm::normalize(glm::vec3(1.0f, 1.0f, 1.0f)));
@@ -135,6 +147,15 @@ void Terrain::Draw(Shader& shader, unsigned int depthMapTexture, const glm::mat4
 
 	glActiveTexture(GL_TEXTURE6);
 	snowNormal.bind(6);
+
+	glActiveTexture(GL_TEXTURE8);
+	pathTexture.bind(8);
+
+	glActiveTexture(GL_TEXTURE9);
+	brickDiffuse.bind(9);
+
+	glActiveTexture(GL_TEXTURE10);
+	brickNormal.bind(10);
 	
 	glActiveTexture(GL_TEXTURE7);
 	glBindTexture(GL_TEXTURE_2D, depthMapTexture);
