@@ -98,6 +98,17 @@ int main()
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
 
+		static double lastTime = 0.0;
+		static int nbFrames = 0;
+
+		nbFrames++;
+		if (currentFrame - lastTime >= 1.0) { // If last print was more than 1 sec ago
+			std::cout << "FPS: " << nbFrames << " (" << 1000.0 / double(nbFrames) << " ms/frame)" << std::endl;
+
+			nbFrames = 0;
+			lastTime = currentFrame;
+		}
+
 		// render
 		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

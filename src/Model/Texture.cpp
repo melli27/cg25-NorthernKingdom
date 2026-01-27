@@ -13,6 +13,8 @@ Texture::~Texture() {
 
 void Texture::loadFromFile(const char* texturePath)
 {
+	std::string p(texturePath);
+	bool isHeightmap = p.find("heightmap") != std::string::npos;
 	path = texturePath;
 	glGenTextures(1, &handle);
 	glBindTexture(GL_TEXTURE_2D, handle); // all upcoming GL_TEXTURE_2D operations now have effect on this texture object
@@ -21,6 +23,9 @@ void Texture::loadFromFile(const char* texturePath)
 	const char* ext = strrchr(texturePath, '.');
 	if (ext && strcmp(ext, ".dds") == 0) {
 		loadDDS(texturePath);
+	}
+	else if(isHeightmap){
+		loadSTBI(texturePath);
 	}
 	else {
 		loadSTBI(texturePath);
@@ -60,6 +65,46 @@ void Texture::loadSTBI(const char* filepath) {
 	//stbi_image_free(data);
 }
 
+void Texture::loadSTBI_Height16(const char* filepath)
+{
+	int w, h, n;
+
+	// Load 16-bit per channel, force 1 channel (height)
+	uint16_t* data16 = stbi_load_16(filepath, &w, &h, &n, 1);
+	if (!data16) {
+		std::cout << "Failed to load 16-bit heightmap: " << filepath << "\n";
+		return;
+	}
+
+	width = w;
+	height = h;
+	nrChannels = 1;
+
+	glBindTexture(GL_TEXTURE_2D, handle);
+
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
+	// 16-bit normalized height texture
+	glTexImage2D(
+		GL_TEXTURE_2D,
+		0,
+		GL_R16,                 // internal format (16-bit normalized)
+		width,
+		height,
+		0,
+		GL_RED,                 // data has 1 channel
+		GL_UNSIGNED_SHORT,      // 16-bit per pixel
+		data16
+	);
+
+	// Optional: make it appear as grayscale when sampled as RGBA
+	GLint swizzleMask[] = { GL_RED, GL_RED, GL_RED, GL_ONE };
+	glTexParameteriv(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_RGBA, swizzleMask);
+
+	glGenerateMipmap(GL_TEXTURE_2D);
+
+	stbi_image_free(data16);
+}
 
 void Texture::loadDDS(const char* filepath) {
 	FILE* f = fopen(filepath, "rb");

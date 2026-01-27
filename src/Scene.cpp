@@ -14,7 +14,6 @@ Scene::~Scene() {
 	delete lightManager;
 	delete terrain;
 	delete backpack;
-	delete lightCube;
 	delete skybox;
 	delete streetLight;
 }
@@ -36,7 +35,7 @@ void Scene::init() {
 	skyboxShader.createSkyboxShader();
 
 	// Load Terrain / Models
-	terrain = new Terrain(terrainShader, "assets/heightmap2.png");
+	terrain = new Terrain(terrainShader, "assets/hm.png");
 	camera->setTerrain(terrain);
 	camera->setHeightOffset(2.0f);
 	camera->position = glm::vec3(15.0f, terrain->getHeightAt(15.0, -2) + 10.0f, -2.0f);
@@ -48,8 +47,9 @@ void Scene::init() {
 	girl = new Model("assets/models/Peasant Girl/Peasant Girl.dae", true);
 	pavement = new Model("assets/models/pavement/pavement.obj", true);
 	streetLight = new Model("assets/models/Street Light/street_light.obj", true);
-	bigHouse = new Model("assets/models/small_building_1/small_building_1.dae", true);
+	bigHouse = new Model("assets/models/fantasy_castle/castle.obj", true);
 	hangingSign = new Model("assets/models/hanging_sign/hanging_sign.obj", true);
+	//castle = new Model("assets/models/fantasy_castle/castle7/tripo_convert_0230dce3-1413-44bb-a5f4-5298bfa0a7d6.obj", true);
 	
 	// Set textures
 	tower->setTexture("assets/models/Medieval tower/Medieval tower_mid_Col.jpg", "assets/models/Medieval tower/Medieval tower_mid_spec.jpg", "assets/models/Medieval tower/Medieval tower_mid_Nor.jpg");
@@ -74,6 +74,7 @@ void Scene::init() {
 	addModel(girl, vec3(0.0f, 0.0f, 20.0f), vec3(1.6f), vec3(0.0f, 0.0f, 0.0f), false, animator2, true);
 	addModel(streetLight, vec3(5.8f, 0.0f, 18.9f), vec3(1.5f), vec3(0.0f, -34.0f, 0.0f));
 	addModel(hangingSign, vec3(8.98f, 4.75f, 21.08f), vec3(0.7f), vec3(0.0f, 0.0f, 0.0f));
+	//addModel(castle, vec3(0.0f, 0.0f, 5.0f), vec3(10.7f), vec3(0.0f, 0.0f, 0.0f));
 	
 	streetLightModelMatrix = sceneObjects[9].transform;
 	glm::vec3 lightBulbLocal = glm::vec3(0.0f, 2.6f, 0.7f);
@@ -166,8 +167,8 @@ void Scene::render(int window_width, int window_height, float deltaTime)
 	// Render terrain
 	TerrainRenderParams terrainParams;
 	terrainParams.cameraPos = vec3(cameraPos.x, cameraPos.y - terrain->getHeightAt(cameraPos.x, cameraPos.y), cameraPos.z);
-	terrainParams.minTessLevel = 0.0f;
-	terrainParams.maxTessLevel = 60.0f;
+	terrainParams.minTessLevel = 1.0f;
+	terrainParams.maxTessLevel = 50.0f;
 	terrainParams.minDistance = 3.0f;
 	terrainParams.maxDistance = 210.0f;
 

@@ -107,7 +107,7 @@ float Terrain::getHeightAt(float worldX, float worldZ) const {
 	// transformation from tessellation shader:
 	// Height = texture(heightMap, uv).r * 200.0 - 100.0
 	float heightValue = heightMapTexture.getPixelValue(x,y); // Get from heightmap data
-	return heightValue * 200.0f - 100.0f;
+	return heightValue * 64.0f - 16.0f;
 }
 
 

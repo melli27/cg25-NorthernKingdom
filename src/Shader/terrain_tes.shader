@@ -25,7 +25,7 @@ void main()
     vec2 uv0 = mix(HeightMapCoordinates[0], HeightMapCoordinates[1], u);
     vec2 uv1 = mix(HeightMapCoordinates[2], HeightMapCoordinates[3], u);
     vec2 uv = mix(uv0, uv1, v);
-    Height = texture(heightMap, uv).r * 200.0 - 100.0; // * scale - offset  64.0-16.0  Displacementscale
+    Height = texture(heightMap, uv).r * 64.0 - 16.0; // * scale - offset  64.0-16.0  Displacementscale
 
     vec4 p00 = gl_in[0].gl_Position;
     vec4 p01 = gl_in[1].gl_Position;

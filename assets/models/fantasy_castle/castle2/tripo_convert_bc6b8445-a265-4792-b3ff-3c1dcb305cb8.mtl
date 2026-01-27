@@ -1,0 +1,16 @@
+# Blender 4.5.0 MTL File: 'None'
+# www.blender.org
+
+newmtl tripo_mat_bc6b8445-a265-4792-b3ff-3c1dcb305cb8
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Kd castle2_basecolor.JPEG
+map_Ns castle2_roughness.JPEG
+map_Pr castle2_roughness.JPEG
+map_refl castle2_metallic.JPEG
+map_Pm castle2_metallic.JPEG
+map_Bump -bm 1.000000 castle2_normal.JPEG
