@@ -50,6 +50,7 @@ void Scene::init() {
 	bigHouse = new Model("assets/models/small_building_1/small_building_1.dae", true);
 	hangingSign = new Model("assets/models/hanging_sign/hanging_sign.obj", true);
 	well = new Model("assets/models/well/well.obj", true);
+	waterPlane = new Model("assets/models/water_plane/water_plane.obj", true);
 	
 	// Set textures
 	tower->setTexture("assets/models/Medieval tower/Medieval tower_mid_Col.jpg", "assets/models/Medieval tower/Medieval tower_mid_spec.jpg", "assets/models/Medieval tower/Medieval tower_mid_Nor.jpg");
@@ -75,6 +76,7 @@ void Scene::init() {
 	addModel(streetLight, vec3(5.8f, 0.0f, 18.9f), vec3(1.5f), vec3(0.0f, -34.0f, 0.0f));
 	addModel(hangingSign, vec3(8.98f, 4.75f, 21.08f), vec3(0.7f), vec3(0.0f, 0.0f, 0.0f));
 	addModel(well, vec3(-11.2f, 0.16f, 24.9f), vec3(1.5f), vec3(0.0f, 0.0f, 0.0f));
+	addModel(waterPlane, vec3(-11.2f, 0.1f, 24.9f), vec3(0.42f), vec3(0.0f, 0.0f, 0.0f));
 	
 	streetLightModelMatrix = sceneObjects[9].transform;
 	glm::vec3 lightBulbLocal = glm::vec3(0.0f, 2.6f, 0.7f);

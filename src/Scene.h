@@ -77,6 +77,7 @@ private:
     Model* streetLight;
     Model* hangingSign;
     Model* well;
+    Model* waterPlane;
     Geometry* lightCube;
     Geometry* testCube;
     Skybox* skybox;
