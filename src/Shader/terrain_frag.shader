@@ -44,10 +44,10 @@ float ShadowCalculation(vec4 fragPosLightSpace) {
 void computeWeights(float height, out float wGrass, out float wRock, out float wSnow)
 {
     // Grass at bottom
-    float g = 1.0 - smoothstep(0.12, 0.19, height); // 0.12-0.19 Uebergangszone
+    float g = 1.0 - smoothstep(0.20, 0.30, height); // 0.12-0.19 Uebergangszone
     
     // Snow at top
-    float s = smoothstep(0.20, 0.35, height);
+    float s = smoothstep(0.55, 0.65, height);
     
     // Rock in the middle
     float r = 1.0 - g - s;
@@ -62,7 +62,7 @@ void main()
 {
     float wGrass, wRock, wSnow;
 
-    float h0 = clamp((Height + 100.0) / 200.0, 0.0, 1.0);
+    float h0 = clamp((Height + 100.0) / 100.0, 0.0, 1.0);
     computeWeights(h0, wGrass, wRock, wSnow);
 
     // Tiling factor
