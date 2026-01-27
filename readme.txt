@@ -6,7 +6,7 @@ Team:
 Implemented effects:
 Melanie Schiebel
     - Adaptive Tesselation (complex effect)
-    - Vertex Skinning
+    - Vertex Skinning (complex effect)
 
 Quynh Nhu Jennifer Tran
     - Shadow Map with manual PCF (complex effect)
@@ -14,5 +14,8 @@ Quynh Nhu Jennifer Tran
     - Blinn-Phong illumination
     - Skybox (Cubemap)
     - (Normal Mapping with manual tangent space computation (complex effect))
+
+Majority of the other code such as model loading were done by Melanie.
+
 
 The demo was tested on a NVIDIA GeForce RTX 4070 Ti SUPER and Intel.
