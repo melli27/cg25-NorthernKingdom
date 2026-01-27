@@ -9,8 +9,7 @@ Ni 1.4500000
 d 1.000000
 illum 2
 map_Kd M_Street_Light_Emission_BaseColor.png
-map_Ns M_Street_Light_Emission_Roughness.png
-map_refl M_Street_Light_Emission_Metallic.png
+map_Ks M_Street_Light_Emission_BaseColor.png
 map_Ke M_Street_Light_Emission_Emissive.png
 map_Bump M_Street_Light_Emission_Normal.png
 
@@ -22,6 +21,5 @@ Ni 1.4500000
 d 1.000000
 illum 2
 map_Kd M_Street_Light_Pole_BaseColor.png
-map_Ns M_Street_Light_Pole_Roughness.png
-map_refl M_Street_Light_Pole_Metallic.png
+map_Ks M_Street_Light_Pole_BaseColor.png
 map_Bump M_Street_Light_Pole_Normal.png

@@ -76,6 +76,8 @@ private:
     Model* pavement;
     Model* streetLight;
     Model* hangingSign;
+    Model* well;
+    Model* waterPlane;
     Model* castle;
     Geometry* lightCube;
     Geometry* testCube;

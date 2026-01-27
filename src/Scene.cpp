@@ -49,6 +49,8 @@ void Scene::init() {
 	streetLight = new Model("assets/models/Street Light/street_light.obj", true);
 	bigHouse = new Model("assets/models/fantasy_castle/castle.obj", true);
 	hangingSign = new Model("assets/models/hanging_sign/hanging_sign.obj", true);
+	well = new Model("assets/models/well/well.obj", true);
+	waterPlane = new Model("assets/models/water_plane/water_plane.obj", true);
 	//castle = new Model("assets/models/fantasy_castle/castle7/tripo_convert_0230dce3-1413-44bb-a5f4-5298bfa0a7d6.obj", true);
 	
 	// Set textures
