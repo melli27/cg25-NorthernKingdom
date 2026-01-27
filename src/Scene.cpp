@@ -76,7 +76,7 @@ void Scene::init() {
 	addModel(streetLight, vec3(5.8f, 0.0f, 18.9f), vec3(1.5f), vec3(0.0f, -34.0f, 0.0f));
 	addModel(hangingSign, vec3(8.98f, 4.75f, 21.08f), vec3(0.7f), vec3(0.0f, 0.0f, 0.0f));
 	addModel(well, vec3(-11.2f, 0.16f, 24.9f), vec3(1.5f), vec3(0.0f, 0.0f, 0.0f));
-	addModel(waterPlane, vec3(-11.2f, 0.1f, 24.9f), vec3(0.42f), vec3(0.0f, 0.0f, 0.0f));
+	addModel(waterPlane, vec3(-11.2f, 0.1f, 24.9f), vec3(0.41f), vec3(0.0f, 0.0f, 0.0f));
 	
 	streetLightModelMatrix = sceneObjects[9].transform;
 	glm::vec3 lightBulbLocal = glm::vec3(0.0f, 2.6f, 0.7f);
